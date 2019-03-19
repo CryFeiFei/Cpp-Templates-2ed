@@ -17,7 +17,7 @@
 * [11 深入模板基础（Fundamentals in Depth）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/11%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF%E5%9F%BA%E7%A1%80.md)
 * [12 模板中的名称（Names in Template）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/12%20%E6%A8%A1%E6%9D%BF%E4%B8%AD%E7%9A%84%E5%90%8D%E7%A7%B0.md)
 * [13 实例化（Instantiation）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/13%20%E5%AE%9E%E4%BE%8B%E5%8C%96.md)
-* [14 模板实参演绎（Template Argument Deduction）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/14%20%E6%A8%A1%E6%9D%BF%E5%AE%9E%E5%8F%82%E6%8E%A8%E6%96%AD.md)
+* [14 模板实参推断（Template Argument Deduction）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/14%20%E6%A8%A1%E6%9D%BF%E5%AE%9E%E5%8F%82%E6%8E%A8%E6%96%AD.md)
 * [15 特化与重载（Specialization and Overloading）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/15%20%E7%89%B9%E5%8C%96%E4%B8%8E%E9%87%8D%E8%BD%BD.md)
 ## part3： 模板与设计
 * [16 Traits的实现（Implementing Traits）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/16%20Traits%E7%9A%84%E5%AE%9E%E7%8E%B0.md)
