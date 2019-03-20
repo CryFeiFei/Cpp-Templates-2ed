@@ -21,7 +21,7 @@
 * [15 特化与重载（Specialization and Overloading）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part2%20%E6%B7%B1%E5%85%A5%E6%A8%A1%E6%9D%BF/15%20%E7%89%B9%E5%8C%96%E4%B8%8E%E9%87%8D%E8%BD%BD.md)
 ## part3： 模板与设计
 * [16 Traits的实现（Implementing Traits）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/16%20Traits%E7%9A%84%E5%AE%9E%E7%8E%B0.md)
-* 17 基于类型属性的重载（Overloading on Type Property）
+* [17 基于类型属性的重载（Overloading on Type Property）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/17%20%E5%9F%BA%E4%BA%8E%E7%B1%BB%E5%9E%8B%E5%B1%9E%E6%80%A7%E7%9A%84%E9%87%8D%E8%BD%BD.md)
 * 18 模板与继承（Templates and Inheritance）
 * 19 桥接静态多态与动态多态（Bridging Static and Dynamic Polymorphism）
 * 20 元编程（Metaprogramming）
