@@ -1912,3 +1912,54 @@ int main()
   * 为了更容易给标准迭代器配置算法，提供了一个非常简单的property traits模板[std::iterator_traits](https://en.cppreference.com/w/cpp/iterator/iterator_traits)
   * 模板[std::numeric_limits](https://en.cppreference.com/w/cpp/types/numeric_limits)也能被用作property traits模板
   * 标准容器类型的内存分配器使用了policy traits类进行处理，C++98提供了[std::allocator](https://en.cppreference.com/w/cpp/memory/allocator)作为此目的的标准组件，C++11引入了[std::allocator_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits)用于改变分配器的行为
+* 改写[std::char_traits](https://en.cppreference.com/w/cpp/string/char_traits)即可实现自定义行为的string，比如让string不区分大小写
+```cpp
+#include <iostream>
+
+struct ci_char_traits : public std::char_traits<char>
+{
+    static bool eq(char c1, char c2)
+    {
+        return toupper(c1) == toupper(c2);
+    }
+    static bool ne(char c1, char c2)
+    {
+        return toupper(c1) != toupper(c2);
+    }
+    static bool lt(char c1, char c2)
+    {
+        return toupper(c1) < toupper(c2);
+    }
+    static int compare(const char* s1, const char* s2, std::size_t n)
+    {
+        for (; n; ++s1, ++s2, --n) {
+            const char diff (toupper(*s1) - toupper(*s2));
+            if (diff < 0) { return -1; }
+            else if (diff > 0) { return +1; }
+        }
+        return 0;
+    }
+    static const char* find(const char* p, int n, char a)
+    {
+        for (; n != 0; --n, ++p)
+        {
+            if (toupper(*p) == toupper(a)) return p;
+        }
+        return nullptr;
+    }
+};
+
+// std::string其实是std::basic_string<char, char_traits<char>, std::allocator<char>>
+using ci_string = std::basic_string<char, ci_char_traits>;
+
+ostream& operator<<(ostream& os, const ci_string& str) {
+    return os.write(str.data(), str.size());
+}
+
+int main()
+{
+    ci_string s1 = "hello";
+    ci_string s2 = "HeLLO";
+    if (s1 == s2) std::cout << s1;
+}
+```
