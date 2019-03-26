@@ -22,7 +22,7 @@
 ## part3： 模板与设计
 * [16 Traits的实现（Implementing Traits）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/16%20Traits%E7%9A%84%E5%AE%9E%E7%8E%B0.md)
 * [17 基于类型属性的重载（Overloading on Type Property）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/17%20%E5%9F%BA%E4%BA%8E%E7%B1%BB%E5%9E%8B%E5%B1%9E%E6%80%A7%E7%9A%84%E9%87%8D%E8%BD%BD.md)
-* [18 模板与继承（Templates and Inheritance）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/18%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E7%BB%A7%E6%89%BF.md)
+* [18 模板与继承（Template and Inheritance）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/18%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E7%BB%A7%E6%89%BF.md)
 * 19 桥接静态多态与动态多态（Bridging Static and Dynamic Polymorphism）
 * 20 元编程（Metaprogramming）
 * 21 Typelist
