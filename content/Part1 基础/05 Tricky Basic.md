@@ -90,7 +90,7 @@ public:
     void f2() { f(); } // 会调用外部的f或者出错
 };
 ```
-* 这里f2内部调用的f不会考虑基类的f，如果希望调用基类的，使用B\<T\>::或this-\>来指定
+* 这里f2()内部调用的f()不会考虑基类的f()，如果希望调用基类的，有三种做法，一是明确指定B\<T\>::f()指定来调用基类函数
 ```cpp
 template<typename T>
 class B {
@@ -104,20 +104,30 @@ public:
     void f2() { B<T>::f(); }
 };
 ```
-* 使用上述做法的缺点是，如果f是虚函数，会使得动态绑定无效，此时可以使用this-\>
+* 这种做法的一个缺点是，f()是虚函数也只能调用基类的f()
+```cpp
+template<typename T>
+class B {
+public:
+    virtual void f() { std::cout << 1; }
+};
+
+template<typename T>
+class D : B<T> {
+public:
+    virtual void f() { std::cout << 2;  }
+    void f2() { B<T>::f(); }
+};
+
+D<int>* d = new D<int>;
+d->f2(); // 1：只调用基类的f()
+```
+* 另外两种不会引起此问题的做法是使用this-\>或using声明
 ```cpp
 template<typename T>
 class D : B<T> {
 public:
     void f2() { this->f(); }
-};
-```
-* 也可以使用using声明
-```cpp
-template<typename T>
-class B {
-public:
-    void f();
 };
 
 template<typename T>
