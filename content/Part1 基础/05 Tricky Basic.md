@@ -75,7 +75,7 @@ void foo(T p = T{}) { // OK，如果是C++11前则用T()
 {}
 ```
 
-> ## 派生类模板用this->调用基类同名函数
+> ## 派生类模板用this-\>调用基类同名函数
 * 对于派生类模板，调用基类的同名函数时，并不一定是使用基类的此函数
 ```cpp
 template<typename T>
@@ -90,7 +90,7 @@ public:
     void f2() { f(); } // 会调用外部的f或者出错
 };
 ```
-* 这里f2内部调用的f不会考虑基类的f，如果希望调用基类的，使用B<T>::或this->来指定
+* 这里f2内部调用的f不会考虑基类的f，如果希望调用基类的，使用B\<T\>::或this-\>来指定
 ```cpp
 template<typename T>
 class B {
@@ -101,7 +101,30 @@ public:
 template<typename T>
 class D : B<T> {
 public:
-    void f2() { B::<T>f(); } // 或this->f()
+    void f2() { B<T>::f(); }
+};
+```
+* 使用上述做法的缺点是，如果f是虚函数，会使得动态绑定无效，此时可以使用this-\>
+```cpp
+template<typename T>
+class D : B<T> {
+public:
+    void f2() { this->f(); }
+};
+```
+* 也可以使用using声明
+```cpp
+template<typename T>
+class B {
+public:
+    void f();
+};
+
+template<typename T>
+class D : B<T> {
+public:
+    using B<T>::f;
+    void f2() { f(); }
 };
 ```
 
