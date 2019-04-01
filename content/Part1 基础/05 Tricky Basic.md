@@ -85,7 +85,7 @@ public:
 };
 
 template<typename T>
-class D : B<T> {
+class D : public B<T> {
 public:
     void f2() { f(); } // 会调用外部的f或者出错
 };
@@ -99,7 +99,7 @@ public:
 };
 
 template<typename T>
-class D : B<T> {
+class D : public B<T> {
 public:
     void f2() { B<T>::f(); }
 };
@@ -113,7 +113,7 @@ public:
 };
 
 template<typename T>
-class D : B<T> {
+class D : public B<T> {
 public:
     virtual void f() { std::cout << 2;  }
     void f2() { B<T>::f(); }
@@ -125,13 +125,13 @@ d->f2(); // 1：只调用基类的f()
 * 另外两种不会引起此问题的做法是使用this-\>或using声明
 ```cpp
 template<typename T>
-class D : B<T> {
+class D : public B<T> {
 public:
     void f2() { this->f(); }
 };
 
 template<typename T>
-class D : B<T> {
+class D : public B<T> {
 public:
     using B<T>::f;
     void f2() { f(); }
