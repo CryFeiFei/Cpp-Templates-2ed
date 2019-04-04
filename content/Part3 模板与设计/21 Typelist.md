@@ -695,10 +695,9 @@ public:
 template<typename List,
     template<typename T> class MetaFun>
 class TransformT<List, MetaFun, false>
-    : public PushFrontT<
+: public PushFrontT<
     typename TransformT<PopFront<List>, MetaFun>::Type,
-    typename MetaFun<Front<List>>::Type
-    >
+    typename MetaFun<Front<List>>::Type>
 {};
 ```
 * 这种实现更简单，不需要递归，并且十分直接地使用语言特性。此外，它需要更少的模板实例化，因为只有一个Transform模板需要实例化。算法仍然要求线性数量的MeraFun实例化，但那些实例化对算法来说是基本的
