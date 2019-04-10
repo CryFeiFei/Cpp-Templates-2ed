@@ -176,13 +176,23 @@ template<typename List,
     bool Empty = IsEmpty<List>::value>
 class TransformT;
 
-template<typename List,
+// 使用包扩展的优化版本
+template<typename... Elements,
     template<typename T> class MetaFun>
-class TransformT<List, MetaFun, false>
-: public PushFrontT<
-    typename TransformT<PopFront<List>, MetaFun>::Type,
-    typename MetaFun<Front<List>>::Type>
-{};
+class TransformT<Typelist<Elements...>, MetaFun, false>
+{
+public:
+    using Type = Typelist<typename MetaFun<Elements>::Type...>;
+};
+
+// 不使用包扩展的版本
+//template<typename List,
+//    template<typename T> class MetaFun>
+//class TransformT<List, MetaFun, false>
+//: public PushFrontT<
+//    typename TransformT<PopFront<List>, MetaFun>::Type,
+//    typename MetaFun<Front<List>>::Type>
+//{};
 
 template<typename List,
     template<typename T> class MetaFun>
@@ -298,3 +308,72 @@ class InsertionSortT<List, Compare, true>
 public:
     using Type = List;
 };
+
+
+
+template<typename T, T Value>
+struct CTValue
+{
+    static constexpr T value = Value;
+};
+
+
+
+template<typename T, typename U>
+struct MultiplyT;
+
+template<typename T, T Value1, T Value2>
+struct MultiplyT<CTValue<T, Value1>, CTValue<T, Value2>>
+{
+public:
+    using Type = CTValue<T, Value1 * Value2>;
+};
+
+template<typename T, typename U>
+using Multiply = typename MultiplyT<T, U>::Type;
+
+
+
+template<typename T, T... Values>
+struct Valuelist {};
+
+template<typename T, T... Values>
+struct IsEmpty<Valuelist<T, Values...>> {
+    static constexpr bool value = sizeof...(Values) == 0;
+};
+
+template<typename T, T Head, T... Tail>
+struct FrontT<Valuelist<T, Head, Tail...>> {
+    using Type = CTValue<T, Head>;
+    static constexpr T value = Head;
+};
+
+template<typename T, T Head, T... Tail>
+struct PopFrontT<Valuelist<T, Head, Tail...>> {
+    using Type = Valuelist<T, Tail...>;
+};
+
+template<typename T, T... Values, T New>
+struct PushFrontT<Valuelist<T, Values...>, CTValue<T, New>> {
+    using Type = Valuelist<T, New, Values...>;
+};
+
+template<typename T, T... Values, T New>
+struct PushBackT<Valuelist<T, Values...>, CTValue<T, New>> {
+    using Type = Valuelist<T, Values..., New>;
+};
+
+
+
+template<typename Types, typename Indices>
+class SelectT;
+
+template<typename Types, unsigned... Indices>
+class SelectT<Types, Valuelist<unsigned, Indices...>>
+{
+public:
+    using Type = Typelist<NthElement<Types, Indices>...>;
+};
+
+template<typename Types, typename Indices>
+using Select = typename SelectT<Types, Indices>::Type;
