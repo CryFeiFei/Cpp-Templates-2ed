@@ -657,10 +657,10 @@ void valuelisttest()
 auto a = 42_c; // a即为CTValue<int, 42>
 ```
 * 实现如下
+```cpp
 #include <cassert>
 #include <cstddef>
 
-```cpp
 // convert single char to corresponding int value at compile time:
 constexpr int toInt(char c) {
     // hexadecimal letters:
