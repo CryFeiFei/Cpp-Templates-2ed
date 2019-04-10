@@ -101,8 +101,6 @@ public:
         Contender, Best>;
 };
 
-
-
 template<typename List>
 class LargestTypeT<List, true>
 {
