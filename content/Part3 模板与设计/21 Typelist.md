@@ -655,8 +655,8 @@ void valuelisttest()
 * 另外可以提供使用字面值操作符初始化CTValue的能力
 ```cpp
 auto a = 42_c; // a为CTValue<int, 42>
-auto b = 0x815_c // b为CTValue<int, 2069>
-auto c = 0b1111'1111_c // c为CTValue<int, 255>
+auto b = 0x815_c; // b为CTValue<int, 2069>
+auto c = 0b1111'1111_c; // c为CTValue<int, 255>
 ```
 * 实现如下
 ```cpp
