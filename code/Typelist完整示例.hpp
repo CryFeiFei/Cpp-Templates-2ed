@@ -242,8 +242,6 @@ template<typename List, typename Element,
     bool = IsEmpty<List>::value>
 class InsertSortedT;
 
-
-
 template<typename List, typename Element,
     template<typename T, typename U> class Compare>
 class InsertSortedT<List, Element, Compare, false>
