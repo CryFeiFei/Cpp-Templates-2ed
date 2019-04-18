@@ -27,7 +27,7 @@
 * [20 元编程（Metaprogramming）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/20%20%E5%85%83%E7%BC%96%E7%A8%8B.md)
 * [21 Typelist](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/21%20Typelist.md)
 * [22 Tuple](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/22%20Tuple.md)
-* 23 可区分联合（Discriminated Union）
+* [23 标签联合（Discriminated Union）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/23%20%E6%A0%87%E7%AD%BE%E8%81%94%E5%90%88.md)
 * 24 表达式模板（Expression Template）
 * 25 调试模板（Debugging Template）
 
@@ -62,7 +62,7 @@
  23. [元编程](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch23.xhtml#ch23)
  24. [Typelist](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch24.xhtml#ch24)
  25. [Tuple](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch25.xhtml#ch25)
- 26. [可区分联合](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch26.xhtml#ch26)
+ 26. [标签联合](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch26.xhtml#ch26)
  27. [表达式模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch27.xhtml#ch27)
  28. [调试模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch28.xhtml#ch28)
 
