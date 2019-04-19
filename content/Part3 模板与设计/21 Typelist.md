@@ -698,9 +698,8 @@ constexpr int parseInt(const char (&arr)[N]) {
                 base = 8;
                 offset = 1;
                 break;
+        }
     }
-}
-
     // iterate over all digits and compute resulting value:
     int value = 0;
     int multiplier = 1;
