@@ -28,8 +28,8 @@
 * [21 Typelist](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/21%20Typelist.md)
 * [22 Tuple](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/22%20Tuple.md)
 * [23 标签联合（Discriminated Union）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/23%20%E6%A0%87%E7%AD%BE%E8%81%94%E5%90%88.md)
-* 24 表达式模板（Expression Template）
-* 25 调试模板（Debugging Template）
+* [24 表达式模板（Expression Template）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/24%20%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A8%A1%E6%9D%BF.md)
+* 25 模板的调试（Debugging Template）
 
 # [《C++ Templates 2nd》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)原书目录
 ## part1：基础
@@ -64,7 +64,7 @@
  25. [Tuple](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch25.xhtml#ch25)
  26. [标签联合](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch26.xhtml#ch26)
  27. [表达式模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch27.xhtml#ch27)
- 28. [调试模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch28.xhtml#ch28)
+ 28. [模板的调试](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch28.xhtml#ch28)
 
 ## 附录
  29. [一处定义原则](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/appa.xhtml#appa)
