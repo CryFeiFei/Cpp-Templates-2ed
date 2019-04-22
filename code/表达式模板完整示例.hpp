@@ -92,7 +92,7 @@ A<T>& A<T>::operator*= (const T& s)
 template<typename T>
 class A_Scalar {
 private:
-    const T& val; // value of the scalar
+    const T& val;
 public:
     constexpr A_Scalar(const T& v) : val(v) {}
     constexpr const T& operator[] (std::size_t) const { return val; }
@@ -147,8 +147,8 @@ public:
     decltype(auto) operator[] (std::size_t i) const { return a1[a2[i]]; }
     std::size_t size() const { return a2.size(); }
 private:
-    const A1& a1; // reference to first operand
-    const A2& a2; // reference to second operand
+    const A1& a1;
+    const A2& a2;
 };
 
 template<typename T, typename Rep = A<T>>
@@ -218,6 +218,5 @@ operator* (const Array<T, R1>& a, const Array<T, R2>& b) {
 template<typename T, typename R2>
 Array<T, A_Mult<T, A_Scalar<T>, R2>>
 operator* (const T& s, const Array<T, R2>& b) {
-    return Array<T, A_Mult<T, A_Scalar<T>, R2>>
-        (A_Mult<T, A_Scalar<T>, R2>(A_Scalar<T>(s), b.rep()));
+    return Array<T, A_Mult<T, A_Scalar<T>, R2>>(A_Mult<T, A_Scalar<T>, R2>(A_Scalar<T>(s), b.rep()));
 }
