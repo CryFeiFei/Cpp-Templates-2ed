@@ -1,4 +1,4 @@
-# [《C++ Templates 2nd》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)笔记
+# [《C++ Templates 2nd ed》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)笔记
 
 * 本书目前有两版，[第一版](https://book.douban.com/subject/1455780/)出版日期为2002年11月22日，[中文版](https://book.douban.com/subject/1147909/)直到2004年才出版。为了跟进现代C++的发展，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版。书中代码见[《C++ Templates 2nd》官方源码](http://www.tmplbook.com/code/code.html)。
 
@@ -31,7 +31,7 @@
 25. [表达式模板（Expression Template）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/24%20%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A8%A1%E6%9D%BF.md)
 25. [模板的调试（Debugging Template）](https://github.com/downdemo/CPP-Templates-2nd/blob/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/25%20%E6%A8%A1%E6%9D%BF%E7%9A%84%E8%B0%83%E8%AF%95.md)
 
-# [《C++ Templates 2nd》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)原书目录
+# [《C++ Templates 2nd ed》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)原书目录
 ## part1：基础
  1. [函数模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch1.xhtml#ch1)
  2. [类模板](https://learning.oreilly.com/library/view/c-templates-the/9780134778808/ch2.xhtml#ch2)
