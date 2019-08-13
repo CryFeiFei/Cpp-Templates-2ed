@@ -1,6 +1,6 @@
 # [《C++ Templates 2nd ed》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)笔记
 
-* 本书目前有两版，[第一版](https://book.douban.com/subject/1455780/)出版日期为2002年11月22日，[中文版](https://book.douban.com/subject/1147909/)直到2004年才出版。为了跟进现代C++的发展，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版。书中代码见[《C++ Templates 2nd》官方源码](http://www.tmplbook.com/code/code.html)。
+* 本书目前有两版，[第一版](https://book.douban.com/subject/1455780/)出版日期为2002年11月22日，[中文版](https://book.douban.com/subject/1147909/)直到2004年才出版。为了跟进现代C++的发展，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版。书中源码[见此](http://www.tmplbook.com/code/code.html)。
 
 ## part1：基础
 1. [函数模板（Function Template）](https://github.com/downdemo/Cpp-Templates-2nd/blob/master/content/Part1%20%E5%9F%BA%E7%A1%80/01%20%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF.md)
