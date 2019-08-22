@@ -1,4 +1,4 @@
-> ## typename前缀
+## typename前缀
 * C++默认用::访问的名称不是类，因此必须加上typename前缀，告诉编译器该名字是一个类型，否则会报错
 ```cpp
 template<typename T>
@@ -26,7 +26,8 @@ T::SubType* ptr;
 ```cpp
 (T::SubType) * ptr;
 ```
-> ## 零初始化（Zero Initialization）
+
+## 零初始化（Zero Initialization）
 * 使用模板时常希望模板类型的变量已经用默认值初始化，但内置类型无法满足要求
 ```cpp
 template<typename T>
@@ -75,7 +76,7 @@ void foo(T p = T{}) { // OK，如果是C++11前则用T()
 {}
 ```
 
-> ## 派生类模板用this-\>调用基类同名函数
+## 派生类模板用this-\>调用基类同名函数
 * 对于派生类模板，调用基类的同名函数时，并不一定是使用基类的此函数
 ```cpp
 template<typename T>
@@ -138,7 +139,7 @@ public:
 };
 ```
 
-> ## 用于原始数组与字符串字面值（string literal）的模板
+## 用于原始数组与字符串字面值（string literal）的模板
 * 有时把原始数组或字符串字面值传递给函数模板的引用参数会出现问题
 ```cpp
 template<typename T>
@@ -267,7 +268,7 @@ print() for T(&)[]
 print() for T(&)[]
 ```
 
-> ## 成员模板（Member Template）
+## 成员模板（Member Template）
 * 类的成员也可以是模板，嵌套类和成员函数都可以是模板
 * 正常情况下不能用不同类型的类互相赋值
 ```cpp
@@ -364,7 +365,7 @@ Stack<float> floatStack;
 floatStack = stringStack; // 错误：std::string不能转换为float
 ```
 
-> ## 用成员模板参数化容器类型
+## 用成员模板参数化容器类型
 ```cpp
 template<typename T, typename Cont = std::deque<T>>
 class Stack {
@@ -437,7 +438,7 @@ Stack<int> intStack;
 vStack = intStack; // 错误：不能对vStack使用operator=
 ```
 
-> ## 成员模板的特化
+## 成员模板的特化
 * 成员函数模板也能局部或全局特化
 ```cpp
 #include <iostream>
@@ -471,7 +472,7 @@ int main()
 }
 ```
 
-> ## 使用.template
+## 使用.template
 * 有时调用一个成员模板，显式限定模板实参是有必要的，此时必须使用template关键字来确保<是模板实参列表的开始。下面这个例子中，如果没有template，编译器就不知道<是小于号还是模板实参列表的开始
 ```cpp
 template<unsigned long N>
@@ -482,7 +483,7 @@ void printBitset (std::bitset<N> const& bs) {
 ```
 * .template只需要用于依赖于模板参数的名称之后，比如这里的依赖于模板参数N的bs
 
-> ## 泛型lambda和成员模板
+## 泛型lambda和成员模板
 * lambda其实是成员模板的简写
 ```cpp
 [] (auto x, auto y) {
@@ -499,7 +500,7 @@ public:
 };
 ```
 
-> ## 变量模板（Variable Template）
+## 变量模板（Variable Template）
 * C++14中，变量也能被参数化为一个具体类型。和所有模板一样，这个声明不应该出现在函数或局部作用域内
 ```cpp
 template<typename T>
@@ -610,7 +611,7 @@ namespace std {
 }
 ```
 
-> ## 模板的模板参数（Template Template Parameter）
+## 模板的模板参数（Template Template Parameter）
 * 用模板的模板参数，能做到只指定容器类型而不需要指定元素类型
 ```cpp
 Stack<int, std::vector<int>> vStack;
@@ -651,7 +652,7 @@ private:
 };
 ```
 
-> ## 模板的模板实参（Template Template Argument）匹配
+## 模板的模板实参（Template Template Argument）匹配
 * 使用上面的类模板时可能会产生错误，原因是容器还有另一个参数，即内存分配器allocator，C++17之前要求模板的模板实参精确匹配模板的模板参数，即便allocator本身有一个默认值，也不会被考虑用于匹配
 ```cpp
 template<typename T,

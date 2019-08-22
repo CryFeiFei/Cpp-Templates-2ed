@@ -1,5 +1,6 @@
-> ## 基本Tuple设计
-## 存储（Storage）
+## 基本Tuple设计
+
+### 存储（Storage）
 * `N>0`个元素的tuple可存储为一个单元素（首元素）和一个包含`N-1`个元素的tuple（尾），零元素tuple作特殊情况处理。如`Tuple<int, double, std::string>`存为`int`和`Tuple<double, std::string>`，`Tuple<double, std::string>`存为`double`和`Tuple<std::string>`，`Tuple<std::string>`存为`std::string`和一个`Tuple<>`
 ```cpp
 template<typename... Types>
@@ -56,7 +57,7 @@ auto get(const Tuple<Types...>& t) {
 }
 ```
 
-## 构造
+### 构造
 * 已定义的构造函数不能满足如下的直接构造
 ```cpp
 Tuple<int> t(1); // 错误：不能把int转换为Tuple<int>
@@ -106,8 +107,9 @@ auto makeTuple(Types&&... elems)
 Tuple<int, double, const char*> t = makeTuple(1, 3.14, "hi")
 ```
 
-> ## 基本Tuple操作
-## 比较
+## 基本Tuple操作
+
+### 比较
 * 为了比较两个tuple，必须比较他们的元素
 ```cpp
 // basis case:
@@ -127,7 +129,7 @@ bool operator==(const Tuple<Head1, Tail1...>& lhs, const Tuple<Head2, Tail2...>&
 ```
 * 其他比较运算符的实现同理
 
-## 输出
+### 输出
 ```cpp
 void printTuple(std::ostream& strm, const Tuple<>&,
     bool isFirst = true)
@@ -155,8 +157,9 @@ std::ostream& operator<<(std::ostream& strm, const Tuple<Types...>& t)
 std::cout << makeTuple(1, 3.14, std::string("hi")); // 打印(1, 3.14, hi)
 ```
 
-> ## Tuple算法
-## Tuple作为Typelist
+## Tuple算法
+
+### Tuple作为Typelist
 * Tuple和Typelist一样接受任意数量的模板类型参数，因此通过一些偏特化，可以把Tuple转换成一个功能完整的Typelist
 ```cpp
 template<typename T>
@@ -220,7 +223,7 @@ T2 t2(get<1>(t1), get<2>(t1), true);
 std::cout << t2; // 打印(3.14, hi, 1)
 ```
 
-## 添加删除
+### 添加删除
 * 先从最简单的pushFront开始
 ```cpp
 template<typename... Types, typename V>
@@ -270,7 +273,7 @@ auto t2 = popFront(pushBack(t1, true));
 std::cout << std::boolalpha << t2; // 打印(3.14, hi, true)
 ```
 
-## Reverse
+### Reverse
 ```cpp
 // basis case
 Tuple<> reverse(const Tuple<>& t)
@@ -302,7 +305,7 @@ popBack(const Tuple<Types...>& tuple)
 }
 ```
 
-## 索引表
+### 索引表
 * 上面实现的reverse在运行期是低效的，为了解释此问题，引入一个计算拷贝次数的类
 ```cpp
 template<int N>
@@ -392,7 +395,7 @@ auto reverse(const Tuple<Elements...>& t)
 }
 ```
 
-## 洗牌算法和选择算法（Shuffle and Select）
+### 洗牌算法和选择算法（Shuffle and Select）
 * 基于如下select可以构建可以构建许多算法
 ```cpp
 template<typename... Elements, unsigned... Indices>
@@ -478,7 +481,7 @@ auto sort(const Tuple<Elements...>& t)
 }
 ```
 
-> ## Expanding Tuple
+## Expanding Tuple
 * 比如拆开Tuple，将其元素作为实参传递给函数
 ```cpp
 template<typename F, typename... Elements, unsigned... Indices>
@@ -511,8 +514,9 @@ apply(print, t); // Pi is roughly 3 !
 ```
 * C++17提供了[std::apply](https://en.cppreference.com/w/cpp/utility/apply)
 
-> ## 优化
-## Tuple与EBCO
+## 优化
+
+### Tuple与EBCO
 * 严格来说，Tuple的存储实现比实际需要使用了更多的空间，一个问题在于tail成员最终将是一个空tuple，为此可使用EBCO，派生自尾tuple，而不是让它作为一个成员
 ```cpp
 // recursive case:
@@ -679,7 +683,7 @@ B()
 2 bytes // VS实测是3
 ```
 
-## 常数时间的get
+### 常数时间的get
 * 线性数量模板实例化会影响编译时间，EBCO优化允许一个更高效的get实现。关键在于匹配一个基类参数给一个派生类实参时，模板实参推断为基类。因此通过计算元素高度，就可以依赖于从Tuple特化到`TupleElt<H, T>`（T是被推断的）的转换来提取元素，而不需要手动遍历所有索引，这就只需要常数数量的模板实例化
 ```cpp
 template<unsigned H, typename T>
@@ -706,7 +710,7 @@ friend auto get(Tuple<Elements...>& t)
 -> decltype(getHeight<sizeof...(Elements)-I-1>(t));
 ```
 
-> ## 下标（Subscript）
+## 下标（Subscript）
 * 原则上可以定义一个operator[]访问元素，然而tuple的元素可以有不同类型，所以operator[]必须是模板，这就要求每个索引有一个不同类型，这需要使用Typelist中提过的类模板CTValue来表示一个类型中的数值索引
 ```cpp
 template<typename T, T Index>

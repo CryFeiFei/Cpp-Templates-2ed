@@ -1,4 +1,4 @@
-> ## Typelist解析
+## Typelist解析
 * Typelist是类型元编程的核心数据结构，不同于大多数运行期数据结构，typelist不允许改变。比如添加一个元素到[std::list](https://en.cppreference.com/w/cpp/container/list)会改变其本身，而添加一个元素到typelist则是创建一个新的typelist
 * 一个typelist通常实现为一个类模板特化
 ```cpp
@@ -60,14 +60,14 @@ using PushFront = typename PushFrontT<List, NewElement>::Type;
 PushFront<SignedIntegralTypes, bool> // 生成Typelist<bool, signed char, short, int, long, long long>
 ```
 
-> ## Typelist算法
+## Typelist算法
 * 上述操作可以结合起来实现更复杂的算法，比如PopFront再PushFront来替代typelist的第一个元素
 ```cpp
 using Type = PushFront<PopFront<SignedIntegralTypes>, bool>;
 // equivalent to Typelist<bool, short, int, long, long long>
 ```
 
-## 索引
+### 索引
 * 最基本的算法操作之一是提取一个特定的元素
 ```cpp
 using TL = NthElement<Typelist<short, int, long>, 2>; // TL相当于long
@@ -98,7 +98,7 @@ NthElementT<Typelist<long>, 0>
 FrontT<Typelist<long>>
 ```
 
-## 查找最佳匹配
+### 查找最佳匹配
 * 下面有几次要用到IfThenElseT模板，其成员为Type，如果要使用[std::conditional](https://en.cppreference.com/w/cpp/types/conditional)，注意其成员类型为type（小写）
 ```cpp
 template<bool COND, typename TrueType, typename FalseType>
@@ -185,7 +185,7 @@ template<typename List>
 using LargestType = typename LargestTypeT<List>::Type;
 ```
 
-## Append
+### Append
 * 略微改动PushFront就能得到PushBack
 ```cpp
 template<typename List, typename NewElement>
@@ -256,7 +256,7 @@ Typelist<short, int, long>
 * 通用的PushBackRecT实现能用于任何类型的typelist，就像之前的算法一样，它的计算需要线性数量的模板实例化，因为对于长度为N的typelist，将有N+1个PushBackRect和PushFrontT的实例化，以及N个FrontT和PopFrontT的实例化。模板实例化本身相当于一个编译器的调用进程，因此知道模板实例化的数量能粗略估计编译时间
 * 对于巨大的模板元程序，编译时间是一个问题，因此尝试减少通过执行这些算法产生的模板实例化数量是合理的。事实上，第一个PushBack的实现采用了一个Typelist的偏特化，只需要常数数量的模板实例化，这使其在编译期比泛型版本更高效。此外，由于它被描述为一个偏特化，对一个Typelist执行PushBack时将自动选择这个偏特化，从而实现算法特化
 
-## Reverse
+### Reverse
 * 翻转所有元素的顺序
 ```cpp
 template<typename List, bool Empty = IsEmpty<List>::value>
@@ -302,7 +302,7 @@ template<typename List>
 using PopBack = typename PopBackT<List>::Type;
 ```
 
-## Transform
+### Transform
 * 要对每个元素类型进行某种操作，比如对所有元素使用如下元函数
 ```cpp
 template<typename T>
@@ -378,7 +378,7 @@ PushFront<
 Typelist<const short, const int, const long>
 ```
 
-## Accumulate
+### Accumulate
 * Accumulate的参数为一个typelist，一个初始化类型I，一个接受两个类型返回一个类型的元函数F。设typelist的元素依次表示为T1~TN，则Accumulate返回`F(F(...F(F(I, T1), T2), ..., TN−1), TN)`
 ```cpp
 template<typename List,
@@ -466,7 +466,7 @@ LargestTypeAcc<Typelist<short, int, char>> // 生成int
 ```
 
 
-## 插入排序
+### 插入排序
 * 实现插入排序和其他算法一样，递归地把列表拆分为首元素和尾元素，尾部随后递归地排序，再把头部插入排序后的列表中
 ```cpp
 template<typename List,
@@ -563,7 +563,7 @@ using ST = InsertionSort<Types, SmallerThanT>;
 std::cout << std::is_same_v<ST,Typelist<char, short, int, double>>; // true
 ```
 
-> ## 非类型Typelist
+## 非类型Typelist
 * Typelist也能用于编译期值的序列，一个简单的方法是定义一个表示特定类型值的类模板
 ```cpp
 template<typename T, T Value>
@@ -720,7 +720,7 @@ constexpr auto operator"" _c() {
 ```
 * 注意对于浮点字面值，断言会引发一个编译期错误，因为它是一个运行期特性
 
-## 可推断的非类型参数
+### 可推断的非类型参数
 * C++17中，CTValue能通过使用单个可推断的非类型参数改进
 ```cpp
 template<auto Value>
@@ -742,7 +742,7 @@ int x;
 using MyValueList = Valuelist<1,'a', true, &x>;
 ```
 
-> ## 使用包扩展来优化算法
+## 使用包扩展来优化算法
 * Transform算法可以很自然地使用包扩展，因为它对每个列表中的元素进行了相同的操作
 ```cpp
 // recursive case:
@@ -794,7 +794,7 @@ using ReversedSignedIntegralTypes =
 ```
 * 包含另一个typelist索引的非类型typelist通常称为index list或index sequence
 
-> ## Cons（LISP的核心数据结构）风格的Typelist
+## Cons（LISP的核心数据结构）风格的Typelist
 * 引入可变参数模板之前，常根据LISP的cons建模的数据结构来表达typelist，每个cons单元包含一个值（列表的头）和一个嵌套列表（另一个cons或空列表nil）
 ```cpp
 class Nil {};
