@@ -1,4 +1,4 @@
-> ## 完美转发（Perfect Forwarding）
+## 完美转发（Perfect Forwarding）
 * 要用一个函数将实参的如下基本属性转发给另一个函数
   * 可修改的对象转发后应该仍可以被修改
   * 常量对象应该作为只读对象转发
@@ -57,7 +57,7 @@ void f(Ts&&... args)
 }
 ```
 
-> ## 特殊成员函数模板
+## 特殊成员函数模板
 * 模板也能用于特殊的成员函数，如构造函数，但这可能导致意外的行为
 * 下面是未使用模板的代码
 ```cpp
@@ -128,7 +128,7 @@ Person (Person& p);
 ```
 * 但这只是一个局限的解决方案，因为对于派生类对象，成员模板仍然是更好的匹配。最佳方案是在传递实参为Person或一个能转换为Person的表达式时，禁用成员模板
 
-> ## 使用enable_if禁用成员模板
+## 使用enable_if禁用成员模板
 * C++11提供的[std::enable_if](https://en.cppreference.com/w/cpp/types/enable_if)允许在某个编译期条件下忽略函数模板
 ```cpp
 #include <type_traits>
@@ -174,7 +174,7 @@ template<typename T, typename = EnableIfSizeGreater4<T>>
 void f() {}
 ```
 
-> ## 使用enable_if解决完美转发构造函数的优先匹配问题
+## 使用enable_if解决完美转发构造函数的优先匹配问题
 * 现在来解决之前的构造函数模板的问题，当实参STR有正确的类型（std::string或可以转换为std::string的类型）时禁用完美转发构造函数。为此，需要使用另一个[type traits](https://en.cppreference.com/w/cpp/header/type_traits)，[std::is_convertible](https://en.cppreference.com/w/cpp/types/is_convertible)
 ```cpp
 template<typename STR,
@@ -223,7 +223,7 @@ using EnableIfString =
     std::enable_if_t<std::is_constructible_v<std::string, T>>;
 ```
 
-> ## 模板与预定义的特殊成员函数
+## 模板与预定义的特殊成员函数
 * 通常不能用enable_if<>禁用预定义的拷贝/移动构造函数和赋值运算符，因为成员函数模板不会被当作特殊的成员函数，比如当需要拷贝构造函数时，成员模板将被忽略
 ```cpp
 class C {
@@ -261,7 +261,7 @@ public:
 };
 ```
 
-> ## 使用concepts替代enable_if以简化表达式
+## 使用concepts替代enable_if以简化表达式
 * concepts经过长时间讨论仍然还未成为C++17标准的一部分，但一些编译器提供了实验性的支持，对于之前的
 ```cpp
 template<typename STR,
