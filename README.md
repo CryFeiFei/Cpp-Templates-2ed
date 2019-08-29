@@ -1,4 +1,4 @@
-* [本书](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)目前有两版，[第一版](https://book.douban.com/subject/1455780/)出版日期为2002年11月22日，[中文版](https://book.douban.com/subject/1147909/)直到2004年才出版。为了跟进现代C++的发展，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版。书中代码见[《C++ Templates 2ed》官方源码](http://www.tmplbook.com/code/code.html)
+[本书](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)目前有两版，[第一版](https://book.douban.com/subject/1455780/)出版日期为2002年11月22日，[中文版](https://book.douban.com/subject/1147909/)直到2004年才出版。为了跟进现代C++的发展，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版。书中代码见[《C++ Templates 2ed》官方源码](http://www.tmplbook.com/code/code.html)
 
 ## part1：基础
 
