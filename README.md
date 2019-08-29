@@ -1,5 +1,9 @@
 [《C++ Templates》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)目前有两版，[第一版](https://book.douban.com/subject/1455780/)于2002年11月22日出版，并于2004年出版[中文版](https://book.douban.com/subject/1147909/)。C++11与C++98相比堪称脱胎换骨，模板技术自然也顺应时代变得更为易用，但同时也增加了掌握的负担。为了顺应模板在C++11/14/17中的变化，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版，暂时没有中文版，此为个人阅读英文版的笔记。书中代码见[《C++ Templates 2ed》官方源码](http://www.tmplbook.com/code/code.html)。
 
+## GitHub Pages
+
+* https://downdemo.github.io/Cpp-Templates-2ed/
+
 ## part1：基础
 
 1. [函数模板（Function Template）](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part1%20%E5%9F%BA%E7%A1%80/01%20%E5%87%BD%E6%95%B0%E6%A8%A1%E6%9D%BF.md)
