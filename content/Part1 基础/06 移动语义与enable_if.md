@@ -5,55 +5,69 @@
   * 可移动的对象应该作为可移动对象转发
 * 如果不使用模板实现这些功能，必须编写全部的三种情况
 ```cpp
-class X {};
+void f(int&) { std::cout << 1; }
+void f(const int&) { std::cout << 2; }
+void f(int&&) { std::cout << 3; }
 
-void g(X&) {}
-void g(const X&) {}
-void g(X&&) {}
-
-// 用f把实参转发给g
-void f(X& val) {
-    g(val); // 调用g(X&)
+// 用多个重载转发给对应版本比较繁琐
+void g(int& x)
+{
+    f(x);
 }
 
-void f(const X& val) {
-    g(val); // 调用g(const X&)
+void g(const int& x)
+{
+    f(x);
 }
 
-void f(X&& val) {
-    g(std::move(val)); // 需要std::move()调用g(X&&)
+void g(int&& x)
+{
+    f(std::move(x));
+}
+
+// 同样可以用一个模板来替代上述功能
+template<typename T>
+void h(T&& x)
+{
+    f(std::forward<T>(x)); // 注意std::forward的模板参数是T
 }
 
 int main()
 {
-    X v;
-    const X c;
-    f(v); // 调用f(X&) => 调用g(X&)
-    f(c); // 调用f(const X&) => 调用g(const X&)
-    f(X()); // 临时对象，调用f(X&&) => 调用g(X&&)
-    f(std::move(v)); // 调用f(X&&) => 调用g(X&&)
+    int a = 1;
+    const int b = 1;
+
+    g(a); h(a); // 11
+    g(b); h(b); // 22
+    g(std::move(a)); h(std::move(a)); // 33
+    g(1); h(1); // 33
 }
 ```
-* 如下模板适用前两种情况，但不适用可移动的对象
-```cpp
-template<typename T>
-void f (T val) {
-    g(T);
-}
-```
-* 为此C++11引入了完美转发，如下模板即可覆盖上述三种情况
-```cpp
-template<typename T>
-void f (T&& val) {
-    g(std::forward<T>(val)); // 把val完美转发给g
-}
-```
-* 完美转发也可以结合可变参数模板把任意数量实参转发给另一个函数
+* 结合可变参数模板，完美转发可以转发任意数量的实参
 ```cpp
 template<typename... Ts>
 void f(Ts&&... args)
 {
-    g(std::forward<Ts>(args)...); // 把所有args转发给g
+    g(std::forward<Ts>(args)...); // 把任意数量的实参转发给g
+}
+```
+* lambda中也可以使用完美转发
+```cpp
+auto f = [](auto&& x) { return g(std::forward<decltype(x)>(x)); };
+
+// 转发任意数量实参
+auto f = [](auto&&... args) {
+    return g(std::forward<decltype(args)>(args)...);
+};
+```
+* 如果想在转发前修改要转发的值，可以用auto&&存储结果，修改后再转发
+```cpp
+template<typename T>
+void f(T x)
+{
+    auto&& res = doSomething(x);
+    doSomethingElse(res);
+    set(std::forward<decltype(res)>(res));
 }
 ```
 
