@@ -75,8 +75,6 @@ void f(T x)
 * 模板也能用于特殊的成员函数，如构造函数，但这可能导致意外的行为
 * 下面是未使用模板的代码
 ```cpp
-#include <string>
-
 class Person {
     std::string name;
 public:
@@ -97,13 +95,9 @@ int main()
 ```
 * 现在用模板作为构造函数，完美转发实参给成员name，替代原有的两个构造函数
 ```cpp
-#include <string>
-
-class Person
-{
-  private:
+class Person {
     std::string name;
-  public:
+public:
     template<typename STR> // 完美转发构造函数
     explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
     Person (const Person& p) : name(p.name) {} // 拷贝构造函数
@@ -130,13 +124,13 @@ Person p3c(p2c); // 调用拷贝构造函数
 ```cpp
 // 对于Person p1的匹配
 template<typename STR>
-Person(STR&& n)
+Person(STR&&)
 // 优于
-Person (const Person& p)
+Person (const Person&)
 ```
 * 一种解决方法是添加一个接受non-const实参的拷贝构造函数
 ```cpp
-Person (Person& p);
+Person (Person&);
 ```
 * 但这只是一个局限的解决方案，因为对于派生类对象，成员模板仍然是更好的匹配。最佳方案是在传递实参为Person或一个能转换为Person的表达式时，禁用成员模板
 
@@ -172,7 +166,7 @@ f() {}
 template<typename T, typename = std::enable_if_t<(sizeof(T) > 4)>>
 void f() {}
 ```
-* 如果`sizeof(T)>4`，扩展为
+* 如果`sizeof(T) > 4`，扩展为
 ```cpp
 template<typename T, typename = void>
 void f() {}
