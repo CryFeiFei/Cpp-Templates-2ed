@@ -598,7 +598,7 @@ isSigned<char>
 // instead of
 std::numeric_limits<char>::is_signed
 ```
-* C++17开始，标准库使用变量模板来为所有产生一个值的type trait定义简写
+* C++17开始，标准库使用变量模板来为所有产生一个值的type traits定义简写
 ```cpp
 std::is_const_v<T>        // since C++17
 // instead of
