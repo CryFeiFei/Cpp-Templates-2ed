@@ -168,16 +168,16 @@ template<typename T, int N, int M>
 bool less (T(&a)[N], T(&b)[M])
 {
     for (int i = 0; i < N && i < M; ++i) {
-        if (a[i]<b[i]) return true;
-        if (b[i]<a[i]) return false;
+        if (a[i] < b[i]) return true;
+        if (b[i] < a[i]) return false;
     }
     return N < M;
 }
 
 int x[] = {1, 2, 3};
 int y[] = {1, 2, 3, 4, 5};
-std::cout << less(x,y); // true：T = int, N = 3，M = 5
-std::cout << less("ab","abc"); // true：T = const char, N = 3，M = 4
+std::cout << less(x, y); // true：T = int, N = 3，M = 5
+std::cout << less("ab", "abc"); // true：T = const char, N = 3，M = 4
 ```
 * 如果只想支持字符串字面值，将模板参数T直接改为const char即可
 ```cpp
@@ -185,13 +185,13 @@ template<int N, int M>
 bool less (const char(&a)[N], const char(&b)[M])
 {
     for (int i = 0; i < N && i < M; ++i) {
-        if (a[i]<b[i]) return true;
-        if (b[i]<a[i]) return false;
+        if (a[i] < b[i]) return true;
+        if (b[i] < a[i]) return false;
     }
     return N < M;
 }
 ```
-* 对于边界未知的数组，有时必须重载或者局部特化
+* 对于边界未知的数组，有时必须重载或者偏特化
 ```cpp
 #include <iostream>
 
@@ -199,31 +199,31 @@ template<typename T>
 struct MyClass; // primary template
 
 template<typename T, std::size_t SZ>
-struct MyClass<T[SZ]> // 局部特化：用于已知边界的数组
+struct MyClass<T[SZ]> // 偏特化：用于已知边界的数组
 {
     static void print() { std::cout << "print() for T[" << SZ << "]\n"; }
 }; 
 
 template<typename T, std::size_t SZ>
-struct MyClass<T(&)[SZ]> // 局部特化：用于已知边界的数组的引用
+struct MyClass<T(&)[SZ]> // 偏特化：用于已知边界的数组的引用
 {
     static void print() { std::cout << "print() for T(&)[" << SZ << "]\n"; }
 }; 
 
 template<typename T>
-struct MyClass<T[]> // 局部特化：用于未知边界的数组
+struct MyClass<T[]> // 偏特化：用于未知边界的数组
 {
     static void print() { std::cout << "print() for T[]\n"; }
 }; 
 
 template<typename T>
-struct MyClass<T(&)[]> // 局部特化：用于未知边界的数组的引用
+struct MyClass<T(&)[]> // 偏特化：用于未知边界的数组的引用
 {
     static void print() { std::cout << "print() for T(&)[]\n"; }
 }; 
 
 template<typename T>
-struct MyClass<T*> // 局部特化：用于指针
+struct MyClass<T*> // 偏特化：用于指针
 {
     static void print() { std::cout << "print() for T*\n"; }
 };
@@ -439,7 +439,7 @@ vStack = intStack; // 错误：不能对vStack使用operator=
 ```
 
 ## 成员模板的特化
-* 成员函数模板也能局部或全局特化
+* 成员函数模板也能偏特化或全特化
 ```cpp
 #include <iostream>
 #include <string>
@@ -455,7 +455,7 @@ public:
     }
 };
 
-// bool类型的全局特化
+// bool类型的全特化
 template<>
 inline bool BoolString::get<bool>() const {
     return value == "true" || value == "1" || value == "on";
@@ -466,9 +466,9 @@ int main()
     std::cout << std::boolalpha;
     BoolString s1("hello");
     std::cout << s1.get() << '\n'; // hello
-    std::cout << s1.get<bool>() << '\n';  // false
+    std::cout << s1.get<bool>() << '\n'; // false
     BoolString s2("on");
-    std::cout << s2.get<bool>() << '\n';  // true
+    std::cout << s2.get<bool>() << '\n'; // true
 }
 ```
 
@@ -477,8 +477,7 @@ int main()
 ```cpp
 template<unsigned long N>
 void printBitset (std::bitset<N> const& bs) {
-    std::cout << bs.template to_string<char, std::char_traits<char>,
-                                     std::allocator<char>>();
+    std::cout << bs.template to_string<char, std::char_traits<char>, std::allocator<char>>();
 }
 ```
 * .template只需要用于依赖于模板参数的名称之后，比如这里的依赖于模板参数N的bs
@@ -495,7 +494,7 @@ public:
     SomeCompilerSpecificName();  // constructor only callable by compiler
     template<typename T1, typename T2>
     auto operator() (T1 x, T2 y) const {
-      return x + y;
+        return x + y;
     }
 };
 ```
@@ -561,8 +560,7 @@ int main()
 {
     std::cout << dval<'c'> << '\n'; // N有char类型值'c'
     arr<10>[0] = 42; // 第一个元素设置为42（其他9个元素仍为0）
-    for (std::size_t i = 0; i < arr<10>.size(); ++i)
-        std::cout << arr<10>[i] << '\n';
+    for (std::size_t i = 0; i < arr<10>.size(); ++i) std::cout << arr<10>[i] << '\n';
 }
 ```
 * 变量模板的一个用法是为类模板成员定义变量
