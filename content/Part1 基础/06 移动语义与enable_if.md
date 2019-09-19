@@ -77,9 +77,7 @@ void f(T x)
 ```cpp
 #include <string>
 
-class Person
-{
-private:
+class Person {
     std::string name;
 public:
     explicit Person(const std::string& n) : name(n) {} // 拷贝初始化函数
@@ -174,7 +172,7 @@ f() {}
 template<typename T, typename = std::enable_if_t<(sizeof(T) > 4)>>
 void f() {}
 ```
-* 如果sizeof(T)>4，扩展为
+* 如果`sizeof(T)>4`，扩展为
 ```cpp
 template<typename T, typename = void>
 void f() {}
@@ -189,13 +187,13 @@ void f() {}
 ```
 
 ## 使用enable_if解决完美转发构造函数的优先匹配问题
-* 现在来解决之前的构造函数模板的问题，当实参STR有正确的类型（std::string或可以转换为std::string的类型）时禁用完美转发构造函数。为此，需要使用另一个[type traits](https://en.cppreference.com/w/cpp/header/type_traits)，[std::is_convertible](https://en.cppreference.com/w/cpp/types/is_convertible)
+* 现在来解决之前的构造函数模板的问题，当实参STR有正确的类型（[std::string](https://en.cppreference.com/w/cpp/string/basic_string)或可以转换为[std::string](https://en.cppreference.com/w/cpp/string/basic_string)的类型）时禁用完美转发构造函数。为此，需要使用另一个[type traits](https://en.cppreference.com/w/cpp/header/type_traits)，[std::is_convertible](https://en.cppreference.com/w/cpp/types/is_convertible)
 ```cpp
 template<typename STR,
     typename = std::enable_if_t<std::is_convertible<STR, std::string>::value>>
 explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
 ```
-* 如果STR不能转换为std::string，则模板将被忽略。如果STR可转换为std::string，则整个声明扩展为
+* 如果STR不能转换为[std::string](https://en.cppreference.com/w/cpp/string/basic_string)，则模板将被忽略。如果STR可转换为[std::string](https://en.cppreference.com/w/cpp/string/basic_string)，则整个声明扩展为
 ```cpp
 template<typename STR, typename = void>
 explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
@@ -207,12 +205,9 @@ explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
 #include <type_traits>
 
 template<typename T>
-using EnableIfString =
-    std::enable_if_t<std::is_convertible_v<T, std::string>>;
+using EnableIfString = std::enable_if_t<std::is_convertible_v<T, std::string>>;
 
-class Person
-{
-private:
+class Person {
     std::string name;
 public:
     template<typename STR, typename = EnableIfString<STR>>
@@ -233,8 +228,7 @@ int main()
 * 也可以用[std::is_constructible](https://en.cppreference.com/w/cpp/types/is_constructible)替代[std::is_convertible](https://en.cppreference.com/w/cpp/types/is_convertible)，但要注意[std::is_convertible](https://en.cppreference.com/w/cpp/types/is_convertible)判断类型可以隐式转换，而[std::is_constructible](https://en.cppreference.com/w/cpp/types/is_constructible)判断的是显式转换，实参顺序相反
 ```cpp
 template<typename T>
-using EnableIfString =
-    std::enable_if_t<std::is_constructible_v<std::string, T>>;
+using EnableIfString = std::enable_if_t<std::is_constructible_v<std::string, T>>;
 ```
 
 ## 模板与预定义的特殊成员函数
@@ -251,12 +245,10 @@ C y{x}; // 仍然使用预定义合成的拷贝构造函数，上面的模板被
 ```
 * 同样不能删除预定义的拷贝构造函数，但有一个tricky方案，可以为cv限定符修饰的实参声明一个拷贝构造函数，这样会禁止合成拷贝构造函数。再将自定义的拷贝构造函数声明为=delete，这样模板就会成为唯一选择
 ```cpp
-class C
-{
+class C {
 public:
     C(const volatile C&) = delete; // 显式声明将阻止默认合成拷贝构造函数
-    template<typename T>
-    C (const T&) {}
+    template<typename T> C(const T&) {}
 };
 
 C x;
@@ -265,13 +257,11 @@ C y{x}; // 使用模板
 * 此时就可以用enable_if添加限制，比如模板参数类型为整型时禁用拷贝构造
 ```cpp
 template<typename T>
-class C
-{
+class C {
 public:
     C(const volatile C&) = delete;
-    template<typename U, typename =
-        std::enable_if_t<!std::is_integral<U>::value>>
-    C (const C<U>&) {}
+    template<typename U, typename = std::enable_if_t<!std::is_integral_v<U>>>
+    C(const C<U>&) {}
 };
 ```
 
@@ -291,8 +281,7 @@ explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
 * 同样为了方便，类似于别名模板，可以把requirement制定为一个通用的concept
 ```cpp
 template<typename T>
-concept ConvertibleToString =
-    std::is_convertible_v<T,std::string>;
+concept ConvertibleToString = std::is_convertible_v<T,std::string>;
 ```
 * 再将这个concept作为requirement使用
 ```cpp

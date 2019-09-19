@@ -2,16 +2,16 @@
 * C++默认用::访问的名称不是类，因此必须加上typename前缀，告诉编译器该名字是一个类型，否则会报错
 ```cpp
 template<typename T>
-void printcoll (const T& coll)
+void print (const T& c)
 {
     typename T::const_iterator pos; // 必须加上typename前缀
-    typename T::const_iterator end(coll.end());
-    for (pos = coll.begin(); pos! = end; ++pos) std::cout << *pos << ' ';
+    typename T::const_iterator end(c.end());
+    for (pos = c.begin(); pos! = end; ++pos) std::cout << *pos << ' ';
 }
 ```
 * 这个模板使用T类型容器的迭代器，每个STL容器都声明了迭代器类型const_iterator
 ```cpp
-class stlcontainer {
+class Cont {
  public:
     using iterator = ...; // iterator for read/write access
     using const_iterator = ...; // iterator for read access
@@ -22,7 +22,7 @@ class stlcontainer {
 ```cpp
 T::SubType* ptr;
 ```
-* 如果没有加typename前缀，上式会被解析为一个乘法，而不是声明ptr为一个指针
+* 如果没有加typename前缀，上式会被解析为一个乘法，而不是声明一个指针
 ```cpp
 (T::SubType) * ptr;
 ```
@@ -39,7 +39,7 @@ void f()
 * 解决方法是显式调用内置类型的默认构造函数，比如调用int()即可获得0
 ```cpp
 template<typename T>
-voidf()
+void f()
 {
     T x{}; // T为内置类型则x为0（或false）
     // C++11前的语法写为T x = T();
@@ -72,7 +72,7 @@ void f(T p{}) // 错误
 * 正确的写法是
 ```cpp
 template<typename T>
-void foo(T p = T{}) { // OK，如果是C++11前则用T() 
+void foo(T p = T{}) // OK，如果是C++11前则用T() 
 {}
 ```
 
@@ -167,7 +167,8 @@ std::cout << max("cpple", "banana"); // cpple
 template<typename T, int N, int M>
 bool less (T(&a)[N], T(&b)[M])
 {
-    for (int i = 0; i < N && i < M; ++i) {
+    for (int i = 0; i < N && i < M; ++i)
+    {
         if (a[i] < b[i]) return true;
         if (b[i] < a[i]) return false;
     }
@@ -184,7 +185,8 @@ std::cout << less("ab", "abc"); // true：T = const char, N = 3，M = 4
 template<int N, int M>
 bool less (const char(&a)[N], const char(&b)[M])
 {
-    for (int i = 0; i < N && i < M; ++i) {
+    for (int i = 0; i < N && i < M; ++i)
+    {
         if (a[i] < b[i]) return true;
         if (b[i] < a[i]) return false;
     }
@@ -287,7 +289,8 @@ public:
     void push(const T&);
     void pop();
     const T& top() const;
-    bool empty() const {
+    bool empty() const
+    {
         return elems.empty();
     } 
     // assign stack of elements of type T2
@@ -322,7 +325,8 @@ Stack<T>& Stack<T>::operator= (const Stack<T2>& rhs)
     // 不能直接用elems = rhs.elems，因为内部的elems类型也不一样
     Stack<T2> tmp(rhs);
     elems.clear();
-    while (!tmp.empty()) {
+    while (!tmp.empty())
+    {
         elems.push_front(tmp.top());
         tmp.pop();
     }
@@ -339,7 +343,8 @@ public:
     void push(const T&);
     void pop();
     const T& top() const;
-    bool empty() const {
+    bool empty() const
+    {
         return elems.empty();
     }
     template<typename T2>
@@ -375,7 +380,8 @@ public:
     void push(const T&);
     void pop();
     const T& top() const;
-    bool empty() const {
+    bool empty() const
+    {
         return elems.empty();
     } 
     template<typename T2, typename Cont2>
@@ -422,14 +428,15 @@ Stack<T, Cont>& Stack<T, Cont>::operator= (const Stack<T2, Cont2>& rhs)
     elems.clear();
     Stack<T2, Cont2> tmp(rhs);
     elems.clear();
-    while (!tmp.empty()) {
+    while (!tmp.empty())
+    {
         elems.push_front(tmp.top());
         tmp.pop();
     }
     return  *this;
 }
 ```
-* 如果使用这个实现，可以利用成员函数在被调用时才会被实例化的特性，来禁用赋值运算符。使用一个std::vector作为内部容器，因为赋值运算符中使用了push_front，而std::vector没有此成员函数，只要不使用赋值运算符，程序就能正常运行
+* 如果使用这个实现，可以利用成员函数在被调用时才会被实例化的特性，来禁用赋值运算符。使用一个[std::vector](https://en.cppreference.com/w/cpp/container/vector)作为内部容器，因为赋值运算符中使用了push_front，而[std::vector](https://en.cppreference.com/w/cpp/container/vector)没有此成员函数，只要不使用赋值运算符，程序就能正常运行
 ```cpp
 Stack<int, std::vector<int>> vStack;
 vStack.push(42); vStack.push(7);
@@ -445,7 +452,6 @@ vStack = intStack; // 错误：不能对vStack使用operator=
 #include <string>
 
 class BoolString {
-private:
     std::string value;
 public:
     BoolString (std::string const& s) : value(s) {}
@@ -473,7 +479,7 @@ int main()
 ```
 
 ## 使用.template
-* 有时调用一个成员模板，显式限定模板实参是有必要的，此时必须使用template关键字来确保<是模板实参列表的开始。下面这个例子中，如果没有template，编译器就不知道<是小于号还是模板实参列表的开始
+* 有时调用一个成员模板，显式限定模板实参是有必要的，此时必须使用template关键字来确保\<是模板实参列表的开始。下面这个例子中，如果没有template，编译器就不知道\<是小于号还是模板实参列表的开始
 ```cpp
 template<unsigned long N>
 void printBitset (std::bitset<N> const& bs) {
@@ -488,10 +494,11 @@ void printBitset (std::bitset<N> const& bs) {
 [] (auto x, auto y) {
   return x + y;
 }
-// 等价于下面这个类的一个默认构造对象的简写
-class SomeCompilerSpecificName {
+
+// 等价于如下类的一个默认构造对象，即X{}
+class X {
 public:
-    SomeCompilerSpecificName();  // constructor only callable by compiler
+    X(); // 此构造函数只能被编译器调用
     template<typename T1, typename T2>
     auto operator() (T1 x, T2 y) const {
         return x + y;
@@ -512,11 +519,11 @@ std::cout << pi<float> << '\n';
 ```
 * 可以在不同的编译单元中声明变量模板
 ```cpp
-//== header.hpp:
+// header.hpp:
 template<typename T>
-T val{};     // zero initialized value
+T val{}; // 零初始化值
 
-//== translation unit 1:
+// translation unit 1:
 #include "header.hpp"
 
 int main()
@@ -525,12 +532,12 @@ int main()
     print();
 } 
 
-//== translation unit 2:
+// translation unit 2:
 #include "header.hpp"
 
 void print()
 {
-    std::cout << val<long> << '\n'; // OK: prints 42
+    std::cout << val<long>; // 42
 }
 ```
 * 变量模板也能有默认模板实参
@@ -598,7 +605,7 @@ isSigned<char>
 // instead of
 std::numeric_limits<char>::is_signed
 ```
-* C++17开始，标准库使用变量模板来为所有产生一个值的type traits定义简写
+* C++17开始，标准库用变量模板简写了生成值的[type traits](https://en.cppreference.com/w/cpp/header/type_traits)
 ```cpp
 std::is_const_v<T>        // since C++17
 // instead of
@@ -694,7 +701,8 @@ public:
     void push(const T&);
     void pop();
     const T& top() const;
-    bool empty() const {
+    bool empty() const
+    {
         return elems.empty();
     }
 
@@ -702,7 +710,7 @@ public:
         template<typename Elem2,
             typename = std::allocator<Elem2>
                 >class Cont2>
-    Stack<T,Cont>& operator= (Stack<T2, Cont2> const&);
+    Stack<T,Cont>& operator= (const Stack<T2, Cont2>&);
     // to get access to private members of any Stack with elements of type T2
     template<typename, template<typename, typename>class>
     friend class Stack;
@@ -731,31 +739,30 @@ const T& Stack<T,Cont>::top () const
 template<typename T, template<typename,typename> class Cont>
     template<typename T2, template<typename,typename> class Cont2>
 Stack<T,Cont>&
-Stack<T,Cont>::operator= (Stack<T2,Cont2> const& rhs)
+Stack<T,Cont>::operator= (const Stack<T2,Cont2>& rhs)
 {
-    elems.clear();                        // remove existing elements
-    elems.insert(elems.begin(),           // insert at the beginning
-                 rhs.elems.begin(),       // all elements from rhs
-                 rhs.elems.end());
-    return  *this;
+    elems.clear();
+    elems.insert(elems.begin(), rhs.elems.begin(), rhs.elems.end());
+    return *this;
 }
 
 int main()
 {
     Stack<int> intStack;
-    Stack<float> flaotStack;
+    Stack<double> doubleStack;
     intStack.push(1);
     intStack.push(2);
-    flaotStack.push(3.3);
-    std::cout << flaotStack.top() << '\n'; // 3.3
-    flaotStack = intStack;
-    flaotStack.push(4.4);
-    std::cout << flaotStack.top() << '\n'; // 4.4
+    doubleStack.push(3.3);
+    std::cout << doubleStack.top() << '\n'; // 3.3
+    doubleStack = intStack;
+    doubleStack.push(4.4);
+    std::cout << doubleStack.top() << '\n'; // 4.4
     Stack<double, std::vector> vStack;
     vStack.push(5.5);
     std::cout << vStack.top() << '\n'; // 5.5
-    vStack = flaotStack;
-    while (!vStack.empty()) {
+    vStack = doubleStack;
+    while (!vStack.empty())
+    {
         std::cout << vStack.top() << ' '; // 4.4 2 1
         vStack.pop();
     }

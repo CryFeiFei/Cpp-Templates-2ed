@@ -147,7 +147,7 @@ auto accum (const T* beg, const T* end)
 ```
 
 # 02 Traits versus Policies and Policy Classes
-* 除了求和还有其他形式的累积问题，如求积、连接字符串，或者找出序列中的最大值。这些问题只需要修改total += \*beg即可，把这个算法作为一个static函数模板提取到一个Policy类中
+* 除了求和还有其他形式的累积问题，如求积、连接字符串，或者找出序列中的最大值。这些问题只需要修改`total += *beg`即可，把这个算法作为一个static函数模板提取到一个Policy类中
 ```cpp
 class MultPolicy {
 public:
@@ -365,7 +365,7 @@ struct AddRValueReferenceT {
 template<typename T>
 using AddRValueReference = typename AddRValueReferenceT<T>::Type;
 ```
-* 引用折叠在这里会生效，如AddLValueReference<int&&>将折叠为int&
+* 引用折叠在这里会生效，如`AddLValueReference<int&&>`将折叠为int&
 * 如果不引入特化，可以将其简化为
 ```cpp
 template<typename T>
@@ -527,7 +527,7 @@ int main()
     apply (x, incr); // 2，error
 }
 ```
-* 1处int替换T，则apply的参数类型分别是int&和void(*)(int)，而2处要用int&替换T才能匹配，这样却导致第一个参数类型不匹配而出错。解决方法是创建一个类型函数，给定类型本身不是引用则添加引用限定符，此外还可以提供其他需要的转换
+* 1处int替换T，则apply的参数类型分别是`int&`和`void(*)(int)`，而2处要用`int&`替换T才能匹配，这样却导致第一个参数类型不匹配而出错。解决方法是创建一个类型函数，给定类型本身不是引用则添加引用限定符，此外还可以提供其他需要的转换
 ```cpp
 template <typename T>
 class TypeOp { // primary template
@@ -709,7 +709,7 @@ template<typename T1, typename T2>
 Array<RemoveCV<RemoveReference<PlusResult<T1, T2>>>>
 operator+ (const Array<T1>&, const Array<T2>&);
 ```
-* 然而还有一个问题是，表达式T1()+T2()会尝试值初始化，需要元素类型为T1和T2的默认构造函数，但数组类本身可能不要求元素类型的值初始化
+* 然而还有一个问题是，表达式`T1()+T2()`会尝试值初始化，需要元素类型为T1和T2的默认构造函数，但数组类本身可能不要求元素类型的值初始化
 
 ### 3.4.1 declval
 * 标准库提供了[std::declval](https://en.cppreference.com/w/cpp/utility/declval)来产生值但不要求构造函数，它定义在头文件[\<utility\>](https://en.cppreference.com/w/cpp/header/utility)中
@@ -719,7 +719,7 @@ namespace std {
     add_rvalue_reference_t<T> declval() noexcept;
 }
 ```
-* 这个函数模板是特意未定义的，因为它只针对于在decltype、sizeof或其他不需要定义的语境中使用。declval返回一个类型的右值引用，即使该类型没有默认构造函数或者不能创建对象，这使得declval甚至能处理不能从函数正常返回的类型，比如抽象类类型或数组类型。declval\<T\>()用作表达式时，从T到T&&的转换由于引用折叠对declval\<T\>()的行为没有影响。declval本身不会抛出异常，在noexcept运算符的语境中使用时很有用
+* 这个函数模板是特意未定义的，因为它只针对于在decltype、sizeof或其他不需要定义的上下文中使用。declval返回一个类型的右值引用，即使该类型没有默认构造函数或者不能创建对象，这使得declval甚至能处理不能从函数正常返回的类型，比如抽象类类型或数组类型。declval\<T\>()用作表达式时，从T到T&&的转换由于引用折叠对declval\<T\>()的行为没有影响。declval本身不会抛出异常，在noexcept运算符的上下文中使用时很有用
 ```cpp
 #include <iostream>
 #include <utility>
@@ -800,7 +800,7 @@ template<...> static Size2T test(...); // fallback
 ```
 
 ### 4.1.2 Making SFINAE-based traits Predicate traits
- * Predicate traits返回一个派生自std::true_type或std::false_type的布尔值，这个方法也可以解决一些平台上sizeof(char)==sizeof(long)的问题
+ * Predicate traits返回一个派生自std::true_type或std::false_type的布尔值，这个方法也可以解决一些平台上`sizeof(char)==sizeof(long)`的问题
 ```cpp
 #include <type_traits>
 
@@ -944,7 +944,7 @@ struct PlusResultT {
 template<typename T1, typename T2>
 using PlusResult = typename PlusResultT<T1, T2>::Type;
 ```
-* 在这个定义中，+被使用于未被SFINAE保护的语境中，因此如果程序尝试对没有合适的operator+的类型计算PlusResultT则会出错
+* 在这个定义中，+被使用于未被SFINAE保护的上下文中，因此如果程序尝试对没有合适的operator+的类型计算PlusResultT则会出错
 ```cpp
 template<typename T>
 class Array {
@@ -979,7 +979,7 @@ void addAB(const Array<A>& arrayA, const Array<B>& arrayB) {
     ...
 }
 ```
-* 如果编译器能确定第二个operator+的声明是更好的匹配，则可以通过。推断和替换候选函数模板时，类模板定义的实例化期间发生的任何事都不是函数模板替换的即时语境的一部分，于是在PlusResultT中对A和B类型的元素调用operator+就会出错
+* 如果编译器能确定第二个operator+的声明是更好的匹配，则可以通过。推断和替换候选函数模板时，类模板定义的实例化期间发生的任何事都不是函数模板替换的即时上下文的一部分，于是在PlusResultT中对A和B类型的元素调用operator+就会出错
 ```cpp
 template<typename T1, typename T2>
 struct PlusResultT {
@@ -1004,7 +1004,7 @@ struct HasPlusT<T1, T2,
     > : std::true_type
 {};
 ```
-* 如果它产生true，PlusResultT能使用已有实现，否则PlusResultT需要一个safe default，对于一个没有有意义的结果traits最好的default就是不提供任何成员Type，这样如果traits用在SFINAE 语境（如上面的数组operator+模板的返回类型）中，丢失的成员Type将使模板实参推断失败，这正是数组operator+模板想要的结果。下面的实现提供了这个行为
+* 如果它产生true，PlusResultT能使用已有实现，否则PlusResultT需要一个safe default，对于一个没有有意义的结果traits最好的default就是不提供任何成员Type，这样如果traits用在SFINAE 上下文（如上面的数组operator+模板的返回类型）中，丢失的成员Type将使模板实参推断失败，这正是数组operator+模板想要的结果。下面的实现提供了这个行为
 ```cpp
 template<typename T1, typename T2, bool = HasPlusT<T1, T2>::value>
 struct PlusResultT { // primary template, used when HasPlusT yields true
