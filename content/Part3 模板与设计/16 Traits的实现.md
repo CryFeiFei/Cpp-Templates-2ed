@@ -8,7 +8,8 @@ template<typename T>
 T accum (const T* beg, const T* end)
 {
     T total{};
-    while (beg != end) {
+    while (beg != end)
+    {
         total += *beg;
         ++beg;
     }
@@ -38,7 +39,8 @@ auto accum (const T* beg, const T* end)
 {
     using AccT = typename Accumulationtraits<T>::AccT;
     AccT total{};
-    while (beg != end) {
+    while (beg != end)
+    {
         total += *beg;
         ++beg;
     }
@@ -64,7 +66,8 @@ auto accum (const T* beg, const T* end)
 {
     using AccT = typename Accumulationtraits<T>::AccT;
     AccT total = Accumulationtraits<T>::zero;
-    while (beg != end) {
+    while (beg != end)
+    {
         total += *beg;
         ++beg;
     }
@@ -120,7 +123,8 @@ class Accumulationtraits;
 template<>
 struct Accumulationtraits<float> {
     using AccT = double;
-    static constexpr AccT zero() {
+    static constexpr AccT zero()
+    {
         return 0;
     }
 };
@@ -128,7 +132,8 @@ struct Accumulationtraits<float> {
 template<>
 struct Accumulationtraits<BigInt> {
     using AccT = BigInt;
-    static BigInt zero() {
+    static BigInt zero()
+    {
         return BigInt{0};
     }
 };
@@ -144,10 +149,11 @@ AccT total = Accumulationtraits<T>::zero();
 
 ```cpp
 template<typename T, typename Traits = Accumulationtraits<T>>
-auto accum (const T* beg, const T* end)
+auto accum(const T* beg, const T* end)
 {
     typename Traits::AccT total = Traits::zero();
-    while (beg != end) {
+    while (beg != end)
+    {
         total += *beg;
         ++beg;
     }
@@ -162,7 +168,8 @@ auto accum (const T* beg, const T* end)
 class MultPolicy {
 public:
     template<typename T1, typename T2>
-    static void accumulate (T1& total, const T2& value) {
+    static void accumulate(T1& total, const T2& value)
+    {
         total *= value;
     }
 };
@@ -170,7 +177,7 @@ public:
 template <typename T,
     typename Policy = MultPolicy,
     typename Traits = AccumulationTraits<T>>
-auto accum (const T* beg, const T* end)
+auto accum(const T* beg, const T* end)
 {
     using AccT = typename Traits::AccT;
     AccT total = Traits::zero();
@@ -196,7 +203,8 @@ int main()
 template <typename T1, typename T2>
 class MultPolicy {
 public:
-    static void accumulate (T1& total, const T2& value) {
+    static void accumulate(T1& total, const T2& value)
+    {
         total *= value;
     }
 };
@@ -204,11 +212,12 @@ public:
 template<typename T,
     template<typename, typename> class Policy = MultPolicy,
     typename traits = Accumulationtraits<T>>
-auto accum (const T* beg, const T* end)
+auto accum(const T* beg, const T* end)
 {
     using AccT = typename traits::AccT;
     AccT total = traits::zero();
-    while (beg != end) {
+    while (beg != end)
+    {
         Policy<AccT, T>::accumulate(total, *beg);
         ++beg;
     }
@@ -239,11 +248,12 @@ auto accum (const T* beg, const T* end)
 #include <iterator>
 
 template<typename Iter>
-auto accum (Iter beg, Iter end)
+auto accum(Iter beg, Iter end)
 {
     using VT = typename std::iterator_traits<Iter>::value_type;
     VT total{};
-    while (beg != end) {
+    while (beg != end)
+    {
         total += *beg;
         ++beg;
     }
@@ -488,14 +498,15 @@ int main()
 
 // 首先定义nonarray，nonfunction的情况，移除任何cv限定符
 template<typename T>
-struct DecayT : RemoveCVT<T> {
-};
+struct DecayT : RemoveCVT<T>
+{};
 
 // 使用偏特化处理数组到指针的decay，要求识别任何数组类型
 template<typename T>
 struct DecayT<T[]> {
     using Type = T*;
 };
+
 template<typename T, std::size_t N>
 struct DecayT<T[N]> {
     using Type = T*;
@@ -506,6 +517,7 @@ template<typename R, typename... Args>
 struct DecayT<R(Args...)> {
     using Type = R (*)(Args...);
 };
+
 template<typename R, typename... Args>
 struct DecayT<R(Args..., ...)> { // 匹配使用C-style vararg的函数类型
     using Type = R (*)(Args..., ...);
@@ -540,7 +552,7 @@ int main()
 #include <iostream>
 
 template<typename T>
-void apply (T& x, void (*f)(T))
+void apply(T& x, void (*f)(T))
 {
     f(x);
 }
@@ -558,7 +570,7 @@ int main()
 * 1处int替换T，则apply的参数类型分别是`int&`和`void(*)(int)`，而2处要用`int&`替换T才能匹配，这样却导致第一个参数类型不匹配而出错。解决方法是创建一个类型函数，给定类型本身不是引用则添加引用限定符，此外还可以提供其他需要的转换
 
 ```cpp
-template <typename T>
+template<typename T>
 class TypeOp { // primary template
 public:
     typedef T ArgT;
@@ -569,7 +581,7 @@ public:
     typedef const T & RefConstT;
 };
 
-template <typename T>
+template<typename T>
 class TypeOp <const T> { // partial specialization for const types
 public:
     typedef const T ArgT;
@@ -580,7 +592,7 @@ public:
     typedef const T & RefConstT;
 };
 
-template <typename T>
+template<typename T>
 class TypeOp <T&> { // partial specialization for references
 public:
     typedef T & ArgT;
@@ -603,8 +615,8 @@ public:
     typedef void RefConstT;
 };
 
-template <typename T>
-void apply (typename TypeOp<T>::RefT x, void (*f)(T))
+template<typename T>
+void apply(typename TypeOp<T>::RefT x, void (*f)(T))
 {
     f(x);
 }
@@ -620,6 +632,7 @@ template<typename T1, typename T2>
 struct IsSameT {
     static constexpr bool value = false;
 };
+
 template<typename T>
 struct IsSameT<T, T> {
     static constexpr bool value = true;
@@ -705,6 +718,7 @@ namespace std {
     using true_type = bool_constant<true>;
     using false_type = bool_constant<false>;
 }
+
 // 其中bool_constant的定义
 template<bool B>
 using bool_constant = integral_constant<bool, B>;
@@ -716,14 +730,14 @@ using bool_constant = integral_constant<bool, B>;
 ```cpp
 template<typename T1, typename T2>
 Array<typename PlusResultT<T1, T2>::Type>
-operator+ (const Array<T1>&, const Array<T2>&);
+operator+(const Array<T1>&, const Array<T2>&);
 ```
 * 如果提供了对应的别名模板，可以简化为
 
 ```cpp
 template<typename T1, typename T2>
 Array<PlusResult<T1, T2>>
-operator+ (const Array<T1>&, const Array<T2>&);
+operator+(const Array<T1>&, const Array<T2>&);
 ```
 * PlusResultT决定两个类型可能不同的值相加后的类型
 
@@ -740,14 +754,14 @@ using PlusResult = typename PlusResultT<T1, T2>::Type;
 
 ```cpp
 class X { ... };
-const X operator+ (const X&, const X&);
+const X operator+(const X&, const X&);
 ```
 * 于是需要做的就是移除限定符
 
 ```cpp
 template<typename T1, typename T2>
 Array<RemoveCV<RemoveReference<PlusResult<T1, T2>>>>
-operator+ (const Array<T1>&, const Array<T2>&);
+operator+(const Array<T1>&, const Array<T2>&);
 ```
 * 然而还有一个问题是，表达式`T1()+T2()`会尝试值初始化，需要元素类型为T1和T2的默认构造函数，但数组类本身可能不要求元素类型的值初始化
 
@@ -766,8 +780,7 @@ namespace std {
 #include <iostream>
 #include <utility>
 
-struct A
-{
+struct A {
     A() = delete;
     int f() { return 42; }
 };
@@ -819,6 +832,7 @@ IsDefaultConstructibleT<int>::value // true
 struct A {
     A() = delete;
 };
+
 IsDefaultConstructibleT<A>::value // false
 ```
 
@@ -1010,7 +1024,7 @@ class Array {
 // declare + for arrays of different element types:
 template<typename T1, typename T2>
 Array<typename PlusResultT<T1, T2>::Type>
-operator+ (const Array<T1>&, const Array<T2>&);
+operator+(const Array<T1>&, const Array<T2>&);
 ```
 * 明显地，如果数组元素没有定义对应的operator，使用PlusResultT将造成错误
 
@@ -1028,7 +1042,7 @@ void addAB(Array<A> arrayA, Array<B> arrayB) {
 // declare generic + for arrays of different element types:
 template<typename T1, typename T2>
 Array<typename PlusResultT<T1, T2>::Type>
-operator+ (const Array<T1>&, const Array<T2>&);
+operator+(const Array<T1>&, const Array<T2>&);
 
 // overload + for concrete types:
 Array<A> operator+(const Array<A>& arrayA, const Array<B>& arrayB);
@@ -1156,7 +1170,8 @@ struct IsConvertibleHelper<FROM,TO,false> {
 #include <type_traits> // defines true_type and false_type
 
 // helper to ignore any number of template parameters:
-template<typename...> using VoidT = void;
+template<typename...>
+using VoidT = void;
 
 // primary template:
 template<typename, typename = VoidT<>>
@@ -1412,7 +1427,8 @@ int main()
     std::cout << hasSizeType(type<X>) << '\n'; // true
     std::cout << hasSizeType(type<X&>) << '\n'; // true
     
-    if constexpr(!hasSizeType(type<int>)) {
+    if constexpr (!hasSizeType(type<int>))
+    {
         std::cout << "int has no size_type\n";
     }
 
@@ -1888,12 +1904,18 @@ public:
 template<typename T>
 void check()
 {
-    if (IsClassT<T>::Yes) std::cout << "Y" << std::endl;
-    else std::cout << "N" << std::endl;
+    if (IsClassT<T>::Yes)
+    {
+        std::cout << "Y" << '\n';
+    }
+    else
+    {
+        std::cout << "N" << '\n';
+    }
 }
 
 template<typename T>
-void checkT (T)
+void checkT(T)
 {
     check<T>();
 }
@@ -2057,7 +2079,8 @@ struct ci_char_traits : public std::char_traits<char>
 // std::string其实是std::basic_string<char, char_traits<char>, std::allocator<char>>
 using ci_string = std::basic_string<char, ci_char_traits>;
 
-ostream& operator<<(ostream& os, const ci_string& str) {
+ostream& operator<<(ostream& os, const ci_string& str)
+{
     return os.write(str.data(), str.size());
 }
 
