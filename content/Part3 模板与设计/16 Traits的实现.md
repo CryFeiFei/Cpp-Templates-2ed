@@ -1,5 +1,6 @@
 # 01 一个实例：累加一个序列
 ## 1.1 Fixed Traits
+
 ```cpp
 #include <iostream>
 
@@ -22,6 +23,7 @@ int main()
 }
 ```
 * 上述代码的问题是，对于char类型希望计算对应ASCII码的平均值，但结果却是-5（预期结果是108），原因在于模板基于char类型实例化，total类型为char导致结果出现了越界。多引入一个模板参数AccT来指定total的类型即可解决此问题，但这样做的缺点是每次调用都要显式指定这个类型。另一个方法是使用traits
+
 ```cpp
 template<typename T>
 struct Accumulationtraits;
@@ -46,6 +48,7 @@ auto accum (const T* beg, const T* end)
 
 ## 1.2 Value Traits
 * accum模板使用了默认构造函数的返回值初始化total，但类型AccT不一定有一个默认构造函数。为了解决这个问题，需要添加一个value traits
+
 ```cpp
 template<typename T>
 struct Accumulationtraits;
@@ -69,6 +72,7 @@ auto accum (const T* beg, const T* end)
 }
 ```
 * 但这种方法的缺点是，类内初始化的static成员变量只能是整型（int、long、unsigned）常量或枚举类型
+
 ```cpp
 template<>
 struct Accumulationtraits<float> {
@@ -88,6 +92,7 @@ struct Accumulationtraits<BigInt> {
 };
 ```
 * 直接的解决方法是在类外定义value traits
+
 ```cpp
 template<>
 struct Accumulationtraits<BigInt> {
@@ -98,6 +103,7 @@ struct Accumulationtraits<BigInt> {
 const BigInt Accumulationtraits<BigInt>::zero = BigInt{0};
 ```
 * 但这个方法仍有缺点，编译器不知道其他文件的定义，也就不知道zero的值为0。C++17中可以使用inline变量解决此问题
+
 ```cpp
 template<>
 struct Accumulationtraits<BigInt> {
@@ -106,6 +112,7 @@ struct Accumulationtraits<BigInt> {
 };
 ```
 * C++17中的另一种优先做法是使用内联成员函数。如果返回一个literal type，可以将函数声明为constexpr
+
 ```cpp
 template<typename T>
 class Accumulationtraits;
@@ -127,12 +134,14 @@ struct Accumulationtraits<BigInt> {
 };
 ```
 * 使用的区别只是由访问静态数据成员改为使用函数调用语法
+
 ```cpp
 AccT total = Accumulationtraits<T>::zero();
 ```
 
 ## 1.3 Parameterized Traits
 * 添加一个模板参数来参数化traits
+
 ```cpp
 template<typename T, typename Traits = Accumulationtraits<T>>
 auto accum (const T* beg, const T* end)
@@ -148,6 +157,7 @@ auto accum (const T* beg, const T* end)
 
 # 02 Traits versus Policies and Policy Classes
 * 除了求和还有其他形式的累积问题，如求积、连接字符串，或者找出序列中的最大值。这些问题只需要修改`total += *beg`即可，把这个算法作为一个static函数模板提取到一个Policy类中
+
 ```cpp
 class MultPolicy {
 public:
@@ -181,6 +191,7 @@ int main()
 
 ## 2.1 Member Templates versus Template Template Parameters
 * 之前把policy实现为含成员模板的普通类，下面用类模板实现policy类，并将其用作模板的模板参数来修改Accum接口
+
 ```cpp
 template <typename T1, typename T2>
 class MultPolicy {
@@ -223,6 +234,7 @@ auto accum (const T* beg, const T* end)
 
 ## 2.3 运用普通的迭代器进行累积
 * 下面是一个新版本的的accum，它不仅支持指针，还支持普通的迭代器
+
 ```cpp
 #include <iterator>
 
@@ -239,6 +251,7 @@ auto accum (Iter beg, Iter end)
 }
 ```
 * [std::iterator_traits](https://en.cppreference.com/w/cpp/iterator/iterator_traits)封装了迭代器的相关属性
+
 ```cpp
 namespace std {
     template<typename T>
@@ -252,10 +265,11 @@ namespace std {
 }
 ```
 
-# 03 类型函数（Type Functions）
+# 03 类型函数（Type Function）
 
 ## 3.1 确定元素类型
 * 下面用偏特化为给定容器指出元素类型
+
 ```cpp
 #include <iostream>
 #include <vector>
@@ -299,6 +313,7 @@ int main()
 }
 ```
 * 大多数情况下，类型函数是和容器类型一起实现的，实现能被简化。如果容器类型定义了一个成员类型value_type，可以编码如下
+
 ```cpp
 template<typename C>
 struct ElementT {
@@ -306,16 +321,19 @@ struct ElementT {
 };
 ```
 * 类型函数允许根据容器类型来参数化模板，而不需要指定元素类型的模板参数，比如
+
 ```cpp
 template<typename T, typename C>
 T f(const C& c);
 ```
 * 可以更方便地写为
+
 ```cpp
 template<typename C>
 typename ElementT<C>::Type f(const C& c);
 ```
 * 为类型函数引入别名模板可以进一步简化代码
+
 ```cpp
 template<typename T>
 using ElementType = typename ElementT<T>::Type;
@@ -326,6 +344,7 @@ ElementType<C> f(const C& c);
 
 ## 3.2 Transformation traits
 ### 3.2.1 移除引用
+
 ```cpp
 template<typename T>
 struct RemoveReferenceT {
@@ -348,6 +367,7 @@ using RemoveReference = typename RemoveReferenceT<T>::Type;
 * 标准库提供了对应的[std::remove_reference](https://en.cppreference.com/w/cpp/types/remove_reference)
 
 ### 3.2.2 添加引用
+
 ```cpp
 template<typename T>
 struct AddLValueReferenceT {
@@ -367,6 +387,7 @@ using AddRValueReference = typename AddRValueReferenceT<T>::Type;
 ```
 * 引用折叠在这里会生效，如`AddLValueReference<int&&>`将折叠为int&
 * 如果不引入特化，可以将其简化为
+
 ```cpp
 template<typename T>
 using AddLValueReferenceT = T&;
@@ -375,6 +396,7 @@ template<typename T>
 using AddRValueReferenceT = T&&;
 ```
 * 这样可以不用实例化类模板，但对于void作为模板实参的情况，仍需要类模板特化（别名模板不能被特化）
+
 ```cpp
 template<>
 struct AddLValueReferenceT<void> {
@@ -399,6 +421,7 @@ struct AddLValueReferenceT<const volatile void> {
 * 标准库提供了对应的[std::add_lvalue_reference](https://en.cppreference.com/w/cpp/types/add_reference)和[std::add_rvalue_reference](https://en.cppreference.com/w/cpp/types/add_reference)，标准模板包含了void类型的特化
 
 ### 3.2.3 移除限定符
+
 ```cpp
 template<typename T>
 struct RemoveConstT {
@@ -414,6 +437,7 @@ template<typename T>
 using RemoveConst = typename RemoveConstT<T>::Type;
 ```
 * 此外，transformation traits能被组合，比如创建一个RemoveCVT traits，能同时移除const和volatile
+
 ```cpp
 template<typename T>
 struct RemoveCVT : RemoveConstT<typename RemoveVolatileT<T>::Type> {};
@@ -422,6 +446,7 @@ template<typename T>
 using RemoveCV = typename RemoveCVT<T>::Type;
 ```
 * 如果不需要特化，RemoveCV可以直接用别名模板简化如下
+
 ```cpp
 template<typename T>
 using RemoveCV = RemoveConst<RemoveVolatile<T>>;
@@ -430,6 +455,7 @@ using RemoveCV = RemoveConst<RemoveVolatile<T>>;
 
 ### 3.2.4 Decay
 * 模仿传值时的类型转换，即把数组和函数转指针，并去除顶层cv或引用限定符
+
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -455,6 +481,7 @@ int main()
 }
 ```
 * 可以实现一个传值时产生相同的类型转换的traits
+
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -508,6 +535,7 @@ int main()
 * 标准库提供了对应的[std::decay](https://en.cppreference.com/w/cpp/types/decay)
 
 ### 3.2.5 C++98中的处理
+
 ```cpp
 #include <iostream>
 
@@ -528,6 +556,7 @@ int main()
 }
 ```
 * 1处int替换T，则apply的参数类型分别是`int&`和`void(*)(int)`，而2处要用`int&`替换T才能匹配，这样却导致第一个参数类型不匹配而出错。解决方法是创建一个类型函数，给定类型本身不是引用则添加引用限定符，此外还可以提供其他需要的转换
+
 ```cpp
 template <typename T>
 class TypeOp { // primary template
@@ -585,6 +614,7 @@ void apply (typename TypeOp<T>::RefT x, void (*f)(T))
 ## 3.3 Predicate Traits
 ### 3.3.1 IsSameT
 * 判断两个类型是否相等
+
 ```cpp
 template<typename T1, typename T2>
 struct IsSameT {
@@ -596,10 +626,12 @@ struct IsSameT<T, T> {
 };
 ```
 * 检查模板参数是否为整型
+
 ```cpp
 if (IsSameT<T, int>::value) ...
 ```
 * 由于产生的不是类型而是常量值，因此简化时不能使用别名模板，而应该使用constexpr变量模板
+
 ```cpp
 template<typename T1, typename T2>
 constexpr bool isSame = IsSameT<T1, T2>::value;
@@ -608,6 +640,7 @@ constexpr bool isSame = IsSameT<T1, T2>::value;
 
 ### 3.3.2 true_type和false_type
 * 可以为两种可能的输出提供不同类型来改进IsSameT的定义，如果声明一个类模板BoolConstant，它带有两种可能的实例化TrueType和FalseType，则可以让IsSameT派生自TrueType或FalseType，这个技术称为tag dispatching
+
 ```cpp
 #include <iostream>
 
@@ -653,11 +686,13 @@ int main()
 }
 ```
 * BoolConstant实现包含一个Type成员，这允许使用别名模板来简化
+
 ```cpp
 template<typename T1, typename T2>
 using IsSame = typename IsSameT<T1, T2>::Type;
 ```
 * 为了支持泛型，应该分别只有一个类型代表true和false，C++11在[<type_traits>](https://en.cppreference.com/w/cpp/header/type_traits)中提供了std::true_type和std::false_type
+
 ```cpp
 // C++11/14中的定义
 namespace std {
@@ -677,18 +712,21 @@ using bool_constant = integral_constant<bool, B>;
 
 ## 3.4 Result Type traits
 * result type traits是另一个处理多种类型的类型函数，常用于操作符模板，如写一个对两个数组相加的模板声明时，返回类型的确定
+
 ```cpp
 template<typename T1, typename T2>
 Array<typename PlusResultT<T1, T2>::Type>
 operator+ (const Array<T1>&, const Array<T2>&);
 ```
 * 如果提供了对应的别名模板，可以简化为
+
 ```cpp
 template<typename T1, typename T2>
 Array<PlusResult<T1, T2>>
 operator+ (const Array<T1>&, const Array<T2>&);
 ```
 * PlusResultT决定两个类型可能不同的值相加后的类型
+
 ```cpp
 template<typename T1, typename T2>
 struct PlusResultT {
@@ -699,11 +737,13 @@ template<typename T1, typename T2>
 using PlusResult = typename PlusResultT<T1, T2>::Type;
 ```
 * 这个traits使用decltype推断类型，但这有一些潜在的问题，比如PlusResultT可能产生一个引用类型，而这里的数组类模板可能没有设计对引用类型的处理，更实际的，重载的operator+还可能返回一个const class类型的值
+
 ```cpp
 class X { ... };
 const X operator+ (const X&, const X&);
 ```
 * 于是需要做的就是移除限定符
+
 ```cpp
 template<typename T1, typename T2>
 Array<RemoveCV<RemoveReference<PlusResult<T1, T2>>>>
@@ -712,14 +752,16 @@ operator+ (const Array<T1>&, const Array<T2>&);
 * 然而还有一个问题是，表达式`T1()+T2()`会尝试值初始化，需要元素类型为T1和T2的默认构造函数，但数组类本身可能不要求元素类型的值初始化
 
 ### 3.4.1 declval
-* 标准库提供了[std::declval](https://en.cppreference.com/w/cpp/utility/declval)来产生值但不要求构造函数，它定义在头文件[\<utility\>](https://en.cppreference.com/w/cpp/header/utility)中
+* 标准库提供了[std::declval](https://en.cppreference.com/w/cpp/utility/declval)来产生值但不要求构造函数
+
 ```cpp
 namespace std {
     template<typename T>
     add_rvalue_reference_t<T> declval() noexcept;
 }
 ```
-* 这个函数模板是特意未定义的，因为它只针对于在decltype、sizeof或其他不需要定义的上下文中使用。declval返回一个类型的右值引用，即使该类型没有默认构造函数或者不能创建对象，这使得declval甚至能处理不能从函数正常返回的类型，比如抽象类类型或数组类型。declval\<T\>()用作表达式时，从T到T&&的转换由于引用折叠对declval\<T\>()的行为没有影响。declval本身不会抛出异常，在noexcept运算符的上下文中使用时很有用
+* 这个函数模板是特意未定义的，因为它只针对于在decltype、sizeof或其他不需要定义的上下文中使用。declval返回一个类型的右值引用，即使该类型没有默认构造函数或者不能创建对象，这使得declval甚至能处理不能从函数正常返回的类型，比如抽象类类型或数组类型。`declval<T>()`用作表达式时，从T到T&&的转换由于引用折叠对`declval<T>()`的行为没有影响。declval本身不会抛出异常，在noexcept运算符的上下文中使用时很有用
+
 ```cpp
 #include <iostream>
 #include <utility>
@@ -737,6 +779,7 @@ int main()
 }
 ```
 * 使用declval即可解决之前需要值初始化的问题
+
 ```cpp
 #include <utility>
 
@@ -753,6 +796,7 @@ using PlusResult = typename PlusResultT<T1, T2>::Type;
 
 ## 4.1 SFINAE Out函数重载
 * 使用SFINAE以判断一个类型是否默认可构造
+
 ```cpp
 template<typename T>
 struct IsDefaultConstructibleT {
@@ -768,6 +812,7 @@ public:
 };
 ```
 * 通常SFINAE-based traits就是声明两个返回类型不同的重载函数模板，第一个只在检查成功时匹配，第二个是fallback：可变参数总能匹配任何调用，但如果更好的匹配就会选择其他的。判断T()能否默认构造，首先把T作为U传递（注意不能在第一个test()中直接使用模板参数T），表达式仅当U()存在才有效
+
 ```cpp
 IsDefaultConstructibleT<int>::value // true
 
@@ -779,15 +824,18 @@ IsDefaultConstructibleT<A>::value // false
 
 ### 4.1.1 其他可选的SFINAE-based traits实现策略
 * SFINAE-based traits从C++98开始就可以实现了，关键就是声明两个返回类型不同的重载函数模板
+
 ```cpp
 template<...> static char test(void*);
 template<...> static long test(...);
 ```
 * 但最初的技术使用返回类型的大小来确定哪个重载被选择（仍使用0和enum，因为nullptr和constexpr还不可用）
+
 ```cpp
 enum { value = sizeof(test<...>(0)) == 1 };
 ```
-* 一些平台上可能发生sizeof(char) == sizeof(long)，比如在DSP或老的Cray机器上所有的整型都有同样的大小，为了确保在所有平台上有不同的大小，可以定义如下
+* 一些平台上可能发生`sizeof(char) == sizeof(long)`，比如在DSP或老的Cray机器上所有的整型都有同样的大小，为了确保在所有平台上有不同的大小，可以定义如下
+
 ```cpp
 using Size1T = char;
 using Size2T = struct { char a[2]; };
@@ -800,7 +848,8 @@ template<...> static Size2T test(...); // fallback
 ```
 
 ### 4.1.2 Making SFINAE-based traits Predicate traits
- * Predicate traits返回一个派生自std::true_type或std::false_type的布尔值，这个方法也可以解决一些平台上`sizeof(char)==sizeof(long)`的问题
+* Predicate traits返回一个派生自std::true_type或std::false_type的布尔值，这个方法也可以解决一些平台上`sizeof(char) == sizeof(long)`的问题
+
 ```cpp
 #include <type_traits>
 
@@ -824,6 +873,7 @@ IsDefaultConstructibleHelper<T>::Type
 
 ## 4.2 SFINAE Out偏特化
 * 第二个实现SFINAE-based traits的方法是使用偏特化，下面同样是一个确定T是否默认可构造的例子
+
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -853,6 +903,7 @@ int main()
 }
 ```
 * C++17引入了[std::void_t](https://en.cppreference.com/w/cpp/types/void_t)，对应于这里引入的VoidT，C++17前可以自行定义或直接定义在std中
+
 ```cpp
 #include <type_traits>
 #ifndef __cpp_lib_void_t
@@ -865,6 +916,7 @@ namespace std {
 ## 4.3 为SFINAE使用泛型lambda
 * 无论使用哪种技术，总需要一些公式化的套路来定义traits：重载和调用两个test()成员函数或实现多个偏特化。C++17中可以通过在一个泛型lambda中指定检查条件简化公式化的代码
 * 首先引入一个由两个嵌套的泛型lambda构造的工具
+
 ```cpp
 #include <iostream>
 #include <utility>
@@ -917,6 +969,7 @@ int main()
 }
 ```
 * isDefaultConstructible比之前的traits更可读，并仍有办法使用之前的风格
+
 ```cpp
 template<typename T>
 using IsDefaultConstructibleT
@@ -926,6 +979,7 @@ std::cout << IsDefaultConstructibleT<A>::value;
 ```
 * 这是一个传统的模板声明，然而它只能出现在namespace scope中，而isDefaulConstructible的定义可以在block scope中被引入
 * 这个技术调用的表达式和使用风格十分复杂，一些编译器可能编译失败。但如果isValid可行，许多traits都能只用一个声明实现。比如检查是否存在一个名为first的成员
+
 ```cpp
 constexpr auto hasFirst
     = isValid([](auto x) -> decltype((void)valueT(x).first) {});
@@ -933,6 +987,7 @@ constexpr auto hasFirst
 
 ## 4.4 SFINAE-Friendly traits
 * 通常，一个type traits应该可以回应一个特殊的查询而不造成程序非法。SFINAE-based traits绕开了隐藏的问题，把错误变成了否定的结果。然而，一些traits在面对错误时就不能正常表现了，比如之前的PlusResultT
+
 ```cpp
 #include <utility>
 
@@ -945,6 +1000,7 @@ template<typename T1, typename T2>
 using PlusResult = typename PlusResultT<T1, T2>::Type;
 ```
 * 在这个定义中，+被使用于未被SFINAE保护的上下文中，因此如果程序尝试对没有合适的operator+的类型计算PlusResultT则会出错
+
 ```cpp
 template<typename T>
 class Array {
@@ -957,6 +1013,7 @@ Array<typename PlusResultT<T1, T2>::Type>
 operator+ (const Array<T1>&, const Array<T2>&);
 ```
 * 明显地，如果数组元素没有定义对应的operator，使用PlusResultT将造成错误
+
 ```cpp
 class A {};
 class B {};
@@ -965,7 +1022,8 @@ void addAB(Array<A> arrayA, Array<B> arrayB) {
     ...
 }
 ```
-* 实际出现的问题不像这样明显，而是通常发生于operator+的模板实参推断过程，隐藏在PlusResultT\<A, B\>的实例化中。这将导致即使添加一个特定的重载用来相加A和B数组，程序也可能无法编译，因为C++不能确定如果另一个重载更好时，函数模板中的类型能否实例化
+* 实际出现的问题不像这样明显，而是通常发生于operator+的模板实参推断过程，隐藏在`PlusResultT<A, B>`的实例化中。这将导致即使添加一个特定的重载用来相加A和B数组，程序也可能无法编译，因为C++不能确定如果另一个重载更好时，函数模板中的类型能否实例化
+
 ```cpp
 // declare generic + for arrays of different element types:
 template<typename T1, typename T2>
@@ -979,7 +1037,8 @@ void addAB(const Array<A>& arrayA, const Array<B>& arrayB) {
     ...
 }
 ```
-* 如果编译器能确定第二个operator+的声明是更好的匹配，则可以通过。推断和替换候选函数模板时，类模板定义的实例化期间发生的任何事都不是函数模板替换的即时上下文的一部分，于是在PlusResultT中对A和B类型的元素调用operator+就会出错
+* 如果编译器能确定第二个`operator+`的声明是更好的匹配，则可以通过。推断和替换候选函数模板时，类模板定义的实例化期间发生的任何事都不是函数模板替换的即时上下文的一部分，于是在PlusResultT中对A和B类型的元素调用`operator+`就会出错
+
 ```cpp
 template<typename T1, typename T2>
 struct PlusResultT {
@@ -987,7 +1046,8 @@ struct PlusResultT {
 };
 ```
 * 为了解决这个问题，必须使PlusResultT SFINAE-friendly，即通过给它一个合适的定义使其更有弹性，即使它的decltype表达式是非法的
-* 定义一个HasPlusT来检查给定的类型是否有合适的operator+
+* 定义一个HasPlusT来检查给定的类型是否有合适的`operator+`
+
 ```cpp
 #include <utility> // for declval
 #include <type_traits> // for true_type, false_type, and void_t
@@ -1004,7 +1064,8 @@ struct HasPlusT<T1, T2,
     > : std::true_type
 {};
 ```
-* 如果它产生true，PlusResultT能使用已有实现，否则PlusResultT需要一个safe default，对于一个没有有意义的结果traits最好的default就是不提供任何成员Type，这样如果traits用在SFINAE 上下文（如上面的数组operator+模板的返回类型）中，丢失的成员Type将使模板实参推断失败，这正是数组operator+模板想要的结果。下面的实现提供了这个行为
+* 如果它产生true，PlusResultT能使用已有实现，否则PlusResultT需要一个safe default，对于一个没有有意义的结果traits最好的default就是不提供任何成员Type，这样如果traits用在SFINAE 上下文（如上面的数组`operator+`模板的返回类型）中，丢失的成员Type将使模板实参推断失败，这正是数组`operator+`模板想要的结果。下面的实现提供了这个行为
+
 ```cpp
 template<typename T1, typename T2, bool = HasPlusT<T1, T2>::value>
 struct PlusResultT { // primary template, used when HasPlusT yields true
@@ -1014,13 +1075,14 @@ struct PlusResultT { // primary template, used when HasPlusT yields true
 template<typename T1, typename T2>
 struct PlusResultT<T1, T2, false> {}; // partial specialization, used otherwise
 ```
-* 再次考虑Array\<A\>和Array\<B\>的相加，在上面这个实现中，PlusResultT\<A, B\>的实例化将不会有Type成员，因此operator+模板无效，SFINAE将从考虑中除去函数模板，针对Array\<A\>和Array\<B\>重载的operator+将被选择
+* 再次考虑`Array<A>`和`Array<B>`的相加，在上面这个实现中，`PlusResultT<A, B>`的实例化将不会有Type成员，因此`operator+`模板无效，SFINAE将从考虑中除去函数模板，针对`Array<A>`和`Array<B>`重载的`operator+`将被选择
 * 作为通用的设计原则，如果给出合理的模板实参作为输入，一个traits模板应该永远不会在实例化期间失败。通用的方法是执行两次对应的检查
   * 一次确定操作是否有效
   * 一次计算结果
 
 # 05 IsConvertibleT
 * 判断一个给定的类型能否转换为另一个给定的类型
+
 ```cpp
 #include <iostream>
 #include <type_traits> // for true_type and false_type
@@ -1067,6 +1129,7 @@ int main()
   * 转换为函数类型应该总是产生false，但这里同数组的情况一样
   * 转换为（cv限定符）void类型应该总是产生true，但这里甚至不会成功实例化TO为void类型的情况，因为参数类型不能有类型void
 * 对于这些情况需要额外的偏特化，但对每个可能的cv限定符组合添加特化很麻烦。可以如下给辅助类模板添加一个额外的模板参数
+
 ```cpp
 template<typename FROM, typename TO, bool =
     IsVoidT<TO>::value || IsArrayT<TO>::value || IsFunctionT<TO>::value>
@@ -1087,6 +1150,7 @@ struct IsConvertibleHelper<FROM,TO,false> {
 
 ## 6.1 检查类型成员
 * 判断给定的类型T是否有可访问的类型成员size_type
+
 ```cpp
 #include <iostream> 
 #include <type_traits> // defines true_type and false_type
@@ -1120,6 +1184,7 @@ int main()
 
 ### 6.1.1 处理引用类型
 * 引用类型会引起一些问题
+
 ```cpp
 struct X {
     using size_type = int;
@@ -1129,6 +1194,7 @@ std::cout << HasSizeTypeT<X>::value; // true
 std::cout << HasSizeTypeT<X&>::value; // false
 ```
 * 可以用RemoveReference移除引用
+
 ```cpp
 template<typename T>
 struct HasSizeTypeT<T, VoidT<typename RemoveReference<T>::size_type>>
@@ -1137,6 +1203,7 @@ struct HasSizeTypeT<T, VoidT<typename RemoveReference<T>::size_type>>
 
 ### 6.1.2 注入类名
 * 注意HasSizeTypeT对注入类名也将产生一个true值
+
 ```cpp
 struct size_type {};
 struct A : size_type {};
@@ -1146,6 +1213,7 @@ std::cout << HasSizeTypeT<A>::value; // true
 
 ## 6.2 检查任意类型成员
 * HasSizeTypeT只能检查size_type类型，现在要能对任意指定的类型进行检查。之前用泛型lambda实现过此功能，如果不使用泛型lambda只能通过宏实现
+
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1171,6 +1239,7 @@ int main()
 }
 ```
 * 注意之前的引用类型和注入类名的问题在这里仍会出现
+
 ```cpp
 DEFINE_HAS_TYPE(size_type);
 
@@ -1188,6 +1257,7 @@ std::cout << HasTypeT_size_type<A>::value; // true
 
 ## 6.3 检查非类型成员
 * 检查可访问的非静态数据和非静态函数成员
+
 ```cpp
 #include <iostream>
 #include <type_traits>
@@ -1214,11 +1284,13 @@ int main()
 
 ### 6.3.1 检查成员函数
 * HasMember只检查单个成员的名称，如果存在多个成员，比如重载的成员函数，traits会失效
+
 ```cpp
 DEFINE_HAS_MEMBER(begin);
 std::cout << HasMemberT_begin<std::vector<int>>::value; // false
 ```
 * 为此可以简化traits只检查函数，技巧在于构建一个判断条件的decltype表达式
+
 ```cpp
 template<typename, typename = std::void_t<>>
 struct HasBeginT : std::false_type {};
@@ -1233,6 +1305,7 @@ std::cout << HasBeginT<vector<int>>::value; // true
 
 ### 6.3.2 检查其他表达式
 * 上述技术可用于其他表达式，比如检查两个类型之间是否有比较大小的运算符
+
 ```cpp
 #include <iostream>
 #include <utility> // for declval
@@ -1261,6 +1334,7 @@ int main()
 }
 ```
 * 这个traits可以用于要求模板参数是支持比较大小的类型
+
 ```cpp
 template<typename T>
 class X
@@ -1271,6 +1345,7 @@ class X
 };
 ```
 * [std::void_t](https://en.cppreference.com/w/cpp/types/void_t)可接受任意数量的模板参数，由此可以一次组合多个表达式
+
 ```cpp
 #include <utility> // for declval
 #include <type_traits> // for true_type, false_type, and void_t
@@ -1288,6 +1363,7 @@ struct HasVariousT<T, std::void_t<decltype(std::declval<T>().begin()),
 
 ## 6.4 使用泛型lambda检查成员
 * 比起使用宏，泛型lambda能更紧凑地定义检查成员的traits
+
 ```cpp
 #include <iostream>
 #include <string>
@@ -1351,6 +1427,7 @@ int main()
 }
 ```
 * 如果要支持常用的traits语法，可定义如下
+
 ```cpp
 #include <iostream>
 #include <string>
@@ -1406,6 +1483,7 @@ int main()
 
 ## 7.1 If-Then-Else
 * IfThenElse通过一个布尔参数在两个类型参数进行选择
+
 ```cpp
 // traits/ifthenelse.hpp
 
@@ -1432,6 +1510,7 @@ using IfThenElse =
 #endif // IFTHENELSE_HPP
 ```
 * 下面的类型函数能确定某个值的最低级别整型
+
 ```cpp
 // traits/smallestint.hpp
 
@@ -1456,6 +1535,7 @@ struct SmallestIntT {
 };
 ```
 * 不同于常规的if-then-else语句，这里所有分支的模板实参在被选择前都会被计算，所以不能有非法的代码
+
 ```cpp
 // T是bool或非整型将产生未定义行为
 template<typename T>
@@ -1465,6 +1545,7 @@ struct UnsignedT {
 };
 ```
 * 添加一个类型函数作为中间层即可解决此问题
+
 ```cpp
 // yield T when using member Type:
 template<typename T>
@@ -1485,6 +1566,7 @@ struct UnsignedT {
 };
 ```
 * 类型函数在需要计算::Type时会实例化，所以别名模板并不能有效地用于IfThenElse的分支
+
 ```cpp
 template<typename T>
 using MakeUnsigned = typename MakeUnsignedT<T>::Type;
@@ -1496,6 +1578,7 @@ struct UnsignedT {
 };
 ```
 * 标准库提供了对应的[std::conditional](https://en.cppreference.com/w/cpp/types/conditional)
+
 ```cpp
 template<typename T>
 struct UnsignedT {
@@ -1506,6 +1589,7 @@ struct UnsignedT {
 
 ## 7.2 检查不抛出异常的操作
 * 可以通过[noexcept运算符](https://en.cppreference.com/w/cpp/language/noexcept)直接实现
+
 ```cpp
 #include <utility> // for declval
 #include <type_traits> // for bool_constant
@@ -1515,6 +1599,7 @@ struct IsNothrowMoveConstructibleT
 : std::bool_constant<noexcept(T(std::declval<T>()))> {};
 ```
 * 但这个实现对无法移动构造的类型将报错而非产生false，因为T(std::declval<T&&>())无效
+
 ```cpp
 class A {
 public:
@@ -1524,6 +1609,7 @@ public:
 std::cout << IsNothrowMoveConstructibleT<A>::value; // 编译期错误
 ```
 * 因此在使用[noexcept运算符](https://en.cppreference.com/w/cpp/language/noexcept)前必须确保移动构造函数有效
+
 ```cpp
 #include <utility> // for declval
 #include <type_traits> // for true_type, false_type, and bool_constant<>
@@ -1542,6 +1628,7 @@ struct IsNothrowMoveConstructibleT<T, std::void_t<decltype(T(std::declval<T>()))
 
 ## 7.3 简化traits
 * 用别名模板简化产生类型的traits
+
 ```cpp
 template<typename T>
 using RemoveReference = typename RemoveReferenceT<T>::Type;
@@ -1551,6 +1638,7 @@ using RemoveReference = typename RemoveReferenceT<T>::Type;
   * 一些traits有意让用户特化，大量调用别名模板时就容易和类模板特化混淆
   * 使用别名模板总会实例化类型，将使得对给定类型难以避免无意义的实例化traits。换句话说，别名模板不能用于元函数转发
 * 用constexpr变量模板简化产生值的traits
+
 ```cpp
 template<typename T1, typename T2>
 constexpr bool IsSame = IsSameT<T1, T2>::value;
@@ -1562,6 +1650,7 @@ constexpr bool IsConvertible = IsConvertibleT<FROM, TO>::value;
 # 08 类型分类（Type Classification）
 
 ## 8.1 判断基本类型
+
 ```cpp
 #include <iostream>
 #include <cstddef> // for nullptr_t
@@ -1618,6 +1707,7 @@ int main()
 
 ## 8.2 判断复合类型
 * 指针类型：标准库提供了[std::is_pointer](https://en.cppreference.com/w/cpp/types/is_pointer)
+
 ```cpp
 template<typename T>
 struct IsPointerT : std::false_type {};
@@ -1628,6 +1718,7 @@ struct IsPointerT<T*> : std::true_type {
 };
 ```
 * 引用类型：标准库提供了[std::is_lvalue_reference](https://en.cppreference.com/w/cpp/types/is_lvalue_reference)、[std::is_rvalue_reference](https://en.cppreference.com/w/cpp/types/is_rvalue_reference)、[std::is_reference](https://en.cppreference.com/w/cpp/types/is_reference)
+
 ```cpp
 // 判断左值引用
 template<typename T>
@@ -1653,6 +1744,7 @@ class IsReferenceT: public IfThenElse<IsLValueReferenceT<T>::value,
     IsLValueReferenceT<T>, IsRValueReferenceT<T>> {};
 ```
 * 数组类型：标准库提供了[std::is_array](https://en.cppreference.com/w/cpp/types/is_array)，同时提供了[std::rank](https://en.cppreference.com/w/cpp/types/rank)和[std::extent](https://en.cppreference.com/w/cpp/types/extent)来允许查询大小
+
 ```cpp
 #include <cstddef>
 
@@ -1672,6 +1764,7 @@ struct IsArrayT<T[]> : std::true_type {
 };
 ```
 * 类成员指针类型：标准库提供了[std::is_member_object_pointer](https://en.cppreference.com/w/cpp/types/is_member_object_pointer)、[std::is_member_function_pointer](https://en.cppreference.com/w/cpp/types/is_member_function_pointer)、[std::is_member_pointer](https://en.cppreference.com/w/cpp/types/is_member_pointer)
+
 ```cpp
 template<typename T>
 struct IsPointerToMemberT : std::false_type {};
@@ -1685,6 +1778,7 @@ struct IsPointerToMemberT<T C::*> : std::true_type {
 
 ## 8.3 判断函数类型
 * 函数类型有任意数量的参数影响结果，因此在匹配函数类型的偏特化中，借用一个参数包来捕获所有的参数类型
+
 ```cpp
 template<typename... Elements>
 class Typelist {};
@@ -1709,10 +1803,12 @@ struct IsFunctionT<R (Params..., ...)> : std::true_type
 };
 ```
 * IsFunctionT不能处理所有函数类型，因为函数类型还涉及cv限定符、左值右值引用限定符，以及C++17的noexcept限定符，比如
+
 ```cpp
 using MyFuncType = void (int&) const;
 ```
 * 标记为const的函数类型不是真的const类型，无法用RemoveConst去除。为了识别带限定符的函数类型，需要额外引入大量的偏特化来覆盖所有的限定符组合。这里只阐述其中五个
+
 ```cpp
 template<typename R, typename... Params>
 struct IsFunctionT<R (Params...) const> : std::true_type {
@@ -1753,7 +1849,8 @@ struct IsFunctionT<R (Params..., ...) const&> : std::true_type {
 * 标准库提供了对应的[std::is_function](https://en.cppreference.com/w/cpp/types/is_function)
 
 ## 8.4 判断类类型
-* 表达式T::\*中的T只能为类类型，对其使用SFINAE即可
+* 表达式`T::*`中的T只能为类类型，对其使用SFINAE即可
+
 ```cpp
 #include <type_traits>
 
@@ -1764,6 +1861,7 @@ template<typename T>
 struct IsClassT<T, std::void_t<int T::*>> : std::true_type {};
 ```
 * lambda表达式是一个匿名类，因此检查lambda表达式也将产生true
+
 ```cpp
 auto l = []{};
 static_assert<IsClassT<decltype(l)>::value, "">; // succeeds
@@ -1771,6 +1869,7 @@ static_assert<IsClassT<decltype(l)>::value, "">; // succeeds
 * union也是一种类类型，所以检查union也将产生true
 * 标准库提供了[std::is_class](https://en.cppreference.com/w/cpp/types/is_class)和[std::is_union](https://en.cppreference.com/w/cpp/types/is_union)
 * 下面是C++98中确定类类型的方法
+
 ```cpp
 #include <iostream>
 
@@ -1819,6 +1918,7 @@ int main()
 
 ## 8.5 判断枚举类型
 * 对于枚举类型，直接用SFINAE-based traits检查一个到int的显式转换，排除其他能转到int的类型就是枚举类型
+
 ```cpp
 template<typename T>
 struct IsEnumT {
@@ -1839,6 +1939,7 @@ struct IsEnumT {
 
 ## 9.1 只读的参数类型
 * 一个小的结构也可能有高开销的拷贝构造函数，这时应该以const引用方式传递只读参数。使用policy traits模板可以根据类型大小把实参类型T映射为T或const T&
+
 ```cpp
 template<typename T>
 class RParam {
@@ -1847,6 +1948,7 @@ public:
 };
 ```
 * 另一方面，对容器类型，即使sizeof很小也可能涉及昂贵的拷贝构造函数，因此需要偏特化
+
 ```cpp
 template<typename T>
 struct RParam<Array<T>> {
@@ -1854,6 +1956,7 @@ struct RParam<Array<T>> {
 };
 ```
 * 对某些性能要求严格的类，可以选择性地设置类为传值方式
+
 ```cpp
 template<typename T>
 struct RParam {
@@ -1885,9 +1988,10 @@ int main()
 }
 ```
 * 这种做法的缺点是，函数声明变得格外复杂，且无法使用实参推断，调用时必须显式指定模板实参。一个解决方法是使用一个内联的提供完美转发的包裹函数模板，但该方案要求内联函数会被编译器移除，即编译器直接调用位于内联函数中的函数
+
 ```cpp
 template<typename T1, typename T2>
-void f (typename RParam<T1>::Type p1, typename RParam<T2>::Type p2)
+void f(typename RParam<T1>::Type p1, typename RParam<T2>::Type p2)
 {}
 
 // wrapper to avoid explicit template parameter passing
@@ -1901,7 +2005,7 @@ int main()
 {
     A a;
     B b;
-    g(a,b); // same as f<A,B>(a,b)
+    g(a, b); // same as f<A, B>(a, b)
 }
 ```
 
@@ -1913,6 +2017,7 @@ int main()
   * 模板[std::numeric_limits](https://en.cppreference.com/w/cpp/types/numeric_limits)也能被用作property traits模板
   * 标准容器类型的内存分配器使用了policy traits类进行处理，C++98提供了[std::allocator](https://en.cppreference.com/w/cpp/memory/allocator)作为此目的的标准组件，C++11引入了[std::allocator_traits](https://en.cppreference.com/w/cpp/memory/allocator_traits)用于改变分配器的行为
 * 改写[std::char_traits](https://en.cppreference.com/w/cpp/string/char_traits)即可实现自定义行为的string，比如让string不区分大小写
+
 ```cpp
 #include <iostream>
 

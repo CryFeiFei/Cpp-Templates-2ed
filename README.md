@@ -1,8 +1,8 @@
 [《C++ Templates》](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)目前有两版，[第一版](https://book.douban.com/subject/1455780/)于2002年11月22日出版，并于2004年出版[中文版](https://book.douban.com/subject/1147909/)。C++11与C++98相比堪称脱胎换骨，模板技术自然也顺应时代变得更为易用，但同时也增加了掌握的负担。为了顺应模板在C++11/14/17中的变化，[第二版](https://book.douban.com/subject/11939436/)于2017年9月25日出版，暂时没有中文版，此为个人阅读英文版的笔记。书中代码见[《C++ Templates 2ed》官方源码](http://www.tmplbook.com/code/code.html)。
 
-## GitHub Pages
-
-* [https://downdemo.github.io/Cpp-Templates-2ed/](https://downdemo.github.io/Cpp-Templates-2ed/)
+## 相关链接
+* GitHub Pages：[https://downdemo.github.io/Cpp-Templates-2ed/](https://downdemo.github.io/Cpp-Templates-2ed/)
+* GitBook在线阅读：[https://downdemo.gitbook.io/cpp-templates-2ed/](https://downdemo.gitbook.io/cpp-templates-2ed/)
 
 ## part1：基础
 
@@ -35,7 +35,7 @@
 21. [Typelist](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/21%20Typelist.md)
 22. [Tuple](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/22%20Tuple.md)
 23. [标签联合（Discriminated Union）](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/23%20%E6%A0%87%E7%AD%BE%E8%81%94%E5%90%88.md)
-25. [表达式模板（Expression Template）](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/24%20%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A8%A1%E6%9D%BF.md)
+24. [表达式模板（Expression Template）](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/24%20%E8%A1%A8%E8%BE%BE%E5%BC%8F%E6%A8%A1%E6%9D%BF.md)
 25. [模板的调试（Debugging Template）](https://github.com/downdemo/Cpp-Templates-2ed/tree/master/content/Part3%20%E6%A8%A1%E6%9D%BF%E4%B8%8E%E8%AE%BE%E8%AE%A1/25%20%E6%A8%A1%E6%9D%BF%E7%9A%84%E8%B0%83%E8%AF%95.md)
 
 ## [原书目录](https://www.safaribooksonline.com/library/view/c-templates-the/9780134778808/)
