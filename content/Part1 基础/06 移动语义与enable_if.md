@@ -81,12 +81,13 @@ void f(T x)
 
 ```cpp
 class Person {
-    std::string name;
 public:
     explicit Person(const std::string& n) : name(n) {} // 拷贝初始化函数
     explicit Person(std::string&& n) : name(std::move(n)) {} // 移动初始化函数
-    Person (const Person& p) : name(p.name) {} // 拷贝构造函数
-    Person (Person&& p) : name(std::move(p.name)) {} // 移动构造函数
+    Person(const Person& p) : name(p.name) {} // 拷贝构造函数
+    Person(Person&& p) : name(std::move(p.name)) {} // 移动构造函数
+private:
+    std::string name;
 };
 
 int main()
@@ -102,12 +103,13 @@ int main()
 
 ```cpp
 class Person {
-    std::string name;
 public:
     template<typename STR> // 完美转发构造函数
     explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
-    Person (const Person& p) : name(p.name) {} // 拷贝构造函数
-    Person (Person&& p) : name(std::move(p.name)) {} // 移动构造函数
+    Person(const Person& p) : name(p.name) {} // 拷贝构造函数
+    Person(Person&& p) : name(std::move(p.name)) {} // 移动构造函数
+private:
+    std::string name;
 };
 ```
 * 如下构造函数仍能正常工作
@@ -136,12 +138,12 @@ Person p3c(p2c); // 调用拷贝构造函数
 template<typename STR>
 Person(STR&&)
 // 优于
-Person (const Person&)
+Person(const Person&)
 ```
 * 一种解决方法是添加一个接受non-const实参的拷贝构造函数
 
 ```cpp
-Person (Person&);
+Person(Person&);
 ```
 * 但这只是一个局限的解决方案，因为对于派生类对象，成员模板仍然是更好的匹配。最佳方案是在传递实参为Person或一个能转换为Person的表达式时，禁用成员模板
 
@@ -164,8 +166,8 @@ void f() {}
 
 ```cpp
 template<typename T>
-std::enable_if<(sizeof(T) > 4), T>::type
-f() {
+std::enable_if<(sizeof(T) > 4), T>::type f()
+{
     return T();
 }
 ```
@@ -223,12 +225,13 @@ template<typename T>
 using EnableIfString = std::enable_if_t<std::is_convertible_v<T, std::string>>;
 
 class Person {
-    std::string name;
 public:
     template<typename STR, typename = EnableIfString<STR>>
     explicit Person(STR&& n) : name(std::forward<STR>(n)) {}
-    Person (Person const& p) : name(p.name) {}
-    Person (Person&& p) : name(std::move(p.name)) {}
+    Person(const Person& p) : name(p.name) {}
+    Person(Person&& p) : name(std::move(p.name)) {}
+private:
+    std::string name;
 };
 
 int main()
@@ -254,7 +257,7 @@ using EnableIfString = std::enable_if_t<std::is_constructible_v<std::string, T>>
 class C {
 public:
     template<typename T>
-    C (const T&) {}
+    C(const T&) {}
 };
 
 C x;
@@ -266,7 +269,8 @@ C y{x}; // 仍然使用预定义合成的拷贝构造函数，上面的模板被
 class C {
 public:
     C(const volatile C&) = delete; // 显式声明将阻止默认合成拷贝构造函数
-    template<typename T> C(const T&) {}
+    template<typename T>
+    C(const T&) {}
 };
 
 C x;

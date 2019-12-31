@@ -19,8 +19,7 @@ template<typename List>
 class FrontT;
 
 template<typename Head, typename... Tail>
-class FrontT<Typelist<Head, Tail...>>
-{
+class FrontT<Typelist<Head, Tail...>> {
 public:
     using Type = Head;
 };
@@ -123,8 +122,7 @@ struct IfThenElseT<false, TrueType, FalseType> {
 };
 
 template<bool COND, typename TrueType, typename FalseType>
-using IfThenElse =
-    typename IfThenElseT<COND, TrueType, FalseType>::Type;
+using IfThenElse = typename IfThenElseT<COND, TrueType, FalseType>::Type;
 ```
 * 查找typelist中最大的类型（有多个一样大的类型则返回第一个）
 
@@ -134,8 +132,7 @@ class LargestTypeT;
 
 // recursive case:
 template<typename List>
-class LargestTypeT
-{
+class LargestTypeT {
 private:
     using First = Front<List>;
     using Rest = typename LargestTypeT<PopFront<List>>::Type;
@@ -145,8 +142,7 @@ public:
 
 // basis case:
 template<>
-class LargestTypeT<Typelist<>>
-{
+class LargestTypeT<Typelist<>> {
 public:
     using Type = char;
 };
@@ -158,8 +154,7 @@ using LargestType = typename LargestTypeT<List>::Type;
 
 ```cpp
 template<typename List>
-class IsEmpty
-{
+class IsEmpty {
 public:
     static constexpr bool value = false;
 };
@@ -175,20 +170,17 @@ class LargestTypeT;
 
 // recursive case:
 template<typename List>
-class LargestTypeT<List, false>
-{
+class LargestTypeT<List, false> {
 private:
     using Contender = Front<List>;
     using Best = typename LargestTypeT<PopFront<List>>::Type;
 public:
-    using Type = IfThenElse<(sizeof(Contender) >= sizeof(Best)),
-        Contender, Best>;
+    using Type = IfThenElse<(sizeof(Contender) >= sizeof(Best)), Contender, Best>;
 };
 
 // basis case:
 template<typename List>
-class LargestTypeT<List, true>
-{
+class LargestTypeT<List, true> {
 public:
     using Type = char;
 };
@@ -205,8 +197,7 @@ template<typename List, typename NewElement>
 class PushBackT;
 
 template<typename... Elements, typename NewElement>
-class PushBackT<Typelist<Elements...>, NewElement>
-{
+class PushBackT<Typelist<Elements...>, NewElement> {
 public:
     using Type = Typelist<Elements..., NewElement>;
 };
@@ -222,8 +213,7 @@ class PushBackRecT;
 
 // recursive case:
 template<typename List, typename NewElement>
-class PushBackRecT<List, NewElement, false>
-{
+class PushBackRecT<List, NewElement, false> {
     using Head = Front<List>;
     using Tail = PopFront<List>;
     using NewTail = typename PushBackRecT<Tail, NewElement>::Type;
@@ -234,8 +224,7 @@ public:
 // basis case: PushFront添加NewElement到空列表
 // 因为空列表中PushFront的作用等价于PushBack
 template<typename List, typename NewElement>
-class PushBackRecT<List, NewElement, true>
-{
+class PushBackRecT<List, NewElement, true> {
 public:
     using Type = PushFront<List, NewElement>;
 };
@@ -288,8 +277,7 @@ class ReverseT<List, false>
 
 // basis case:
 template<typename List>
-class ReverseT<List, true>
-{
+class ReverseT<List, true> {
 public:
     using Type = List;
 };
@@ -325,8 +313,7 @@ using PopBack = typename PopBackT<List>::Type;
 
 ```cpp
 template<typename T>
-struct AddConstT
-{
+struct AddConstT {
     using Type = const T;
 };
 ```
@@ -351,8 +338,7 @@ class TransformT<List, MetaFun, false>
 // basis case:
 template<typename List,
     template<typename T> class MetaFun>
-class TransformT<List, MetaFun, true>
-{
+class TransformT<List, MetaFun, true> {
 public:
     using Type = List;
 };
@@ -425,8 +411,7 @@ class AccumulateT<List, F, I, false>
 template<typename List,
     template<typename X, typename Y> class F,
     typename I>
-class AccumulateT<List, F, I, true>
-{
+class AccumulateT<List, F, I, true> {
 public:
     using Type = I;
 };
@@ -487,7 +472,7 @@ class LargestTypeAccT<Typelist, true>
 template<typename Typelist>
 using LargestTypeAcc = typename LargestTypeAccT<Typelist>::Type;
 
-LargestTypeAcc<Typelist<short, int, char>> // 生成int
+LargestTypeAcc<Typelist<short, int, char>> // int
 ```
 
 
@@ -517,8 +502,7 @@ class InsertionSortT<List, Compare, false>
 // basis case (an empty list is sorted):
 template<typename List,
     template<typename T, typename U> class Compare>
-class InsertionSortT<List, Compare, true>
-{
+class InsertionSortT<List, Compare, true> {
 public:
     using Type = List;
 };
@@ -539,8 +523,7 @@ class InsertSortedT;
 // recursive case:
 template<typename List, typename Element,
     template<typename T, typename U> class Compare>
-class InsertSortedT<List, Element, Compare, false>
-{
+class InsertSortedT<List, Element, Compare, false> {
     // compute the tail of the resulting list:
     using NewTail =
         typename IfThenElse<Compare<Element, Front<List>>::value,
@@ -597,8 +580,7 @@ std::cout << std::is_same_v<ST,Typelist<char, short, int, double>>; // true
 
 ```cpp
 template<typename T, T Value>
-struct CTValue
-{
+struct CTValue {
     static constexpr T value = Value;
 };
 ```
@@ -615,9 +597,7 @@ template<typename T, typename U>
 struct MultiplyT;
 
 template<typename T, T Value1, T Value2>
-struct MultiplyT<CTValue<T, Value1>, CTValue<T, Value2>>
-{
-public:
+struct MultiplyT<CTValue<T, Value1>, CTValue<T, Value2>> {
     using Type = CTValue<T, Value1 * Value2>;
 };
 
@@ -704,10 +684,12 @@ auto c = 0b1111'1111_c; // c为CTValue<int, 255>
 // convert single char to corresponding int value at compile time:
 constexpr int toInt(char c) {
     // hexadecimal letters:
-    if (c >= 'A' && c <= 'F') {
+    if (c >= 'A' && c <= 'F')
+    {
         return static_cast<int>(c) - static_cast<int>('A') + 10;
     }
-    if (c >= 'a' && c <= 'f') {
+    if (c >= 'a' && c <= 'f')
+    {
         return static_cast<int>(c) - static_cast<int>('a') + 10;
     }
     // other (disable '.' for floating-point literals):
@@ -720,7 +702,8 @@ template<std::size_t N>
 constexpr int parseInt(const char (&arr)[N]) {
     int base = 10; // to handle base (default: decimal)
     int offset = 0; // to skip prefixes like 0x
-    if (N > 2 && arr[0] == '0') {
+    if (N > 2 && arr[0] == '0')
+    {
         switch (arr[1]) {
             case 'x': //prefix 0x or 0X, so hexadecimal
             case 'X':
@@ -741,8 +724,10 @@ constexpr int parseInt(const char (&arr)[N]) {
     // iterate over all digits and compute resulting value:
     int value = 0;
     int multiplier = 1;
-    for (std::size_t i = 0; i < N - offset; ++i) {
-        if (arr[N-1-i] != '\'') { // ignore separating single quotes (e.g. in 1'000)
+    for (std::size_t i = 0; i < N - offset; ++i)
+    {
+        if (arr[N-1-i] != '\'')
+        { // ignore separating single quotes (e.g. in 1'000)
             value += toInt(arr[N-1-i]) * multiplier;
             multiplier *= base;
         }
@@ -752,7 +737,8 @@ constexpr int parseInt(const char (&arr)[N]) {
 
 // literal operator: parse integral literals with suffix _c as sequence of chars:
 template<char... cs>
-constexpr auto operator"" _c() {
+constexpr auto operator"" _c()
+{
     return CTValue<int, parseInt<sizeof...(cs)>({cs...})>{};
 }
 ```
@@ -763,8 +749,7 @@ constexpr auto operator"" _c() {
 
 ```cpp
 template<auto Value>
-struct CTValue
-{
+struct CTValue {
     static constexpr auto value = Value;
 };
 ```
@@ -790,8 +775,7 @@ using MyValueList = Valuelist<1,'a', true, &x>;
 // recursive case:
 template<typename... Elements,
     template<typename T> class MetaFun>
-class TransformT<Typelist<Elements...>, MetaFun, false>
-{
+class TransformT<Typelist<Elements...>, MetaFun, false> {
 public:
     using Type = Typelist<typename MetaFun<Elements>::Type...>;
 };
@@ -817,8 +801,7 @@ template<typename Types, typename Indices>
 class SelectT;
 
 template<typename Types, unsigned... Indices>
-class SelectT<Types, Valuelist<unsigned, Indices...>>
-{
+class SelectT<Types, Valuelist<unsigned, Indices...>> {
 public:
     using Type = Typelist<NthElement<Types, Indices>...>;
 };

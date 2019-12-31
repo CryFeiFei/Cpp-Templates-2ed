@@ -5,7 +5,7 @@
 #include <iostream>
 
 template<typename T>
-T accum (const T* beg, const T* end)
+T accum(const T* beg, const T* end)
 {
     T total{};
     while (beg != end)
@@ -35,7 +35,7 @@ struct Accumulationtraits<char> {
 };
 
 template<typename T>
-auto accum (const T* beg, const T* end)
+auto accum(const T* beg, const T* end)
 {
     using AccT = typename Accumulationtraits<T>::AccT;
     AccT total{};
@@ -62,7 +62,7 @@ struct Accumulationtraits<char> {
 };
 
 template<typename T>
-auto accum (const T* beg, const T* end)
+auto accum(const T* beg, const T* end)
 {
     using AccT = typename Accumulationtraits<T>::AccT;
     AccT total = Accumulationtraits<T>::zero;
@@ -309,7 +309,7 @@ struct ElementT<T[]> { // partial specialization for arrays of unknown bounds
 };
 
 template<typename T>
-void printElementType (const T& c)
+void printElementType(const T& c)
 {
     std::cout << typeid(typename ElementT<T>::Type).name();
 }
@@ -353,6 +353,7 @@ ElementType<C> f(const C& c);
 ```
 
 ## 3.2 Transformation traits
+
 ### 3.2.1 移除引用
 
 ```cpp
@@ -389,7 +390,7 @@ using AddLValueReference = typename AddLValueReferenceT<T>::Type;
 
 template<typename T>
 struct AddRValueReferenceT {
-  using Type = T&&;
+    using Type = T&&;
 };
 
 template<typename T>
@@ -624,6 +625,7 @@ void apply(typename TypeOp<T>::RefT x, void (*f)(T))
 * 注意T位于受限名称中，不能被第一个实参推断出来，因此只能根据第二个实参推断T，再根据结果生成第一个参数的实际类型
 
 ## 3.3 Predicate Traits
+
 ### 3.3.1 IsSameT
 * 判断两个类型是否相等
 
@@ -880,8 +882,7 @@ public:
 };
 
 template<typename T>
-struct IsDefaultConstructibleT :
-IsDefaultConstructibleHelper<T>::Type
+struct IsDefaultConstructibleT : IsDefaultConstructibleHelper<T>::Type
 {};
 ```
 
@@ -892,7 +893,8 @@ IsDefaultConstructibleHelper<T>::Type
 #include <iostream>
 #include <type_traits>
 
-template<typename...> using VoidT = void;
+template<typename...>
+using VoidT = void;
 
 // primary template:
 template<typename, typename = VoidT<>> // VoidT<>即void
@@ -904,8 +906,7 @@ template<typename T>
 struct IsDefaultConstructibleT<T, VoidT<decltype(T())>> : std::true_type
 {};
 
-struct A
-{
+struct A {
     A() = delete;
 };
 
@@ -964,8 +965,7 @@ constexpr auto type = TypeT<T>{};
 template<typename T>
 T valueT(TypeT<T>); // 不需要定义
 
-struct A
-{
+struct A {
     A() = delete;
 };
 
@@ -1352,8 +1352,7 @@ int main()
 
 ```cpp
 template<typename T>
-class X
-{
+class X {
     static_assert(HasLessT<T>::value,
         "Class X requires comparable elements");
     ...
@@ -1520,8 +1519,7 @@ struct IfThenElseT<false, TrueType, FalseType> {
 };
 
 template<bool COND, typename TrueType, typename FalseType>
-using IfThenElse =
-    typename IfThenElseT<COND, TrueType, FalseType>::Type;
+using IfThenElse = typename IfThenElseT<COND, TrueType, FalseType>::Type;
 
 #endif // IFTHENELSE_HPP
 ```
@@ -1708,7 +1706,7 @@ MK_FUNDA_TYPE(std::nullptr_t)
 #undef MK_FUNDA_TYPE
 
 template<typename T>
-void test (const T&)
+void test(const T&)
 {
     std::cout << IsFundaT<T>::value;
 }
@@ -1803,16 +1801,14 @@ template<typename T>
 struct IsFunctionT : std::false_type {};
 
 template<typename R, typename... Params>
-struct IsFunctionT<R (Params...)> : std::true_type
-{ //functions
+struct IsFunctionT<R (Params...)> : std::true_type { //functions
     using Type = R;
     using ParamsT = Typelist<Params...>;
     static constexpr bool variadic = false;
 };
 
 template<typename R, typename... Params>
-struct IsFunctionT<R (Params..., ...)> : std::true_type
-{ // variadic functions
+struct IsFunctionT<R (Params..., ...)> : std::true_type { // variadic functions
     using Type = R;
     using ParamsT = Typelist<Params...>;
     static constexpr bool variadic = true;
@@ -1841,8 +1837,7 @@ struct IsFunctionT<R (Params..., ...) volatile> : std::true_type {
 };
 
 template<typename R, typename... Params>
-struct IsFunctionT<R (Params..., ...) const volatile> :
-std::true_type {
+struct IsFunctionT<R (Params..., ...) const volatile> : std::true_type {
     using Type = R;
     using ParamsT = Typelist<Params...>;
     static constexpr bool variadic = true;
@@ -2059,8 +2054,9 @@ struct ci_char_traits : public std::char_traits<char>
     }
     static int compare(const char* s1, const char* s2, std::size_t n)
     {
-        for (; n; ++s1, ++s2, --n) {
-            const char diff (toupper(*s1) - toupper(*s2));
+        for (; n; ++s1, ++s2, --n)
+        {
+            const char diff{toupper(*s1) - toupper(*s2)};
             if (diff < 0) { return -1; }
             else if (diff > 0) { return +1; }
         }

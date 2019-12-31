@@ -5,8 +5,7 @@ template<typename List>
 class FrontT;
 
 template<typename Head, typename... Tail>
-class FrontT<Typelist<Head, Tail...>>
-{
+class FrontT<Typelist<Head, Tail...>> {
 public:
     using Type = Head;
 };
@@ -73,8 +72,7 @@ using IfThenElse = typename IfThenElseT<COND, TrueType, FalseType>::Type;
 
 
 template<typename List>
-class IsEmpty
-{
+class IsEmpty {
 public:
     static constexpr bool value = false;
 };
@@ -91,19 +89,16 @@ template<typename List, bool Empty = IsEmpty<List>::value>
 class LargestTypeT;
 
 template<typename List>
-class LargestTypeT<List, false>
-{
+class LargestTypeT<List, false> {
 private:
     using Contender = Front<List>;
     using Best = typename LargestTypeT<PopFront<List>>::Type;
 public:
-    using Type = IfThenElse<(sizeof(Contender) >= sizeof(Best)),
-        Contender, Best>;
+    using Type = IfThenElse<(sizeof(Contender) >= sizeof(Best)), Contender, Best>;
 };
 
 template<typename List>
-class LargestTypeT<List, true>
-{
+class LargestTypeT<List, true> {
 public:
     using Type = char;
 };
@@ -117,8 +112,7 @@ template<typename List, typename NewElement, bool = IsEmpty<List>::value>
 class PushBackRecT;
 
 template<typename List, typename NewElement>
-class PushBackRecT<List, NewElement, false>
-{
+class PushBackRecT<List, NewElement, false> {
     using Head = Front<List>;
     using Tail = PopFront<List>;
     using NewTail = typename PushBackRecT<Tail, NewElement>::Type;
@@ -127,8 +121,7 @@ public:
 };
 
 template<typename List, typename NewElement>
-class PushBackRecT<List, NewElement, true>
-{
+class PushBackRecT<List, NewElement, true> {
 public:
     using Type = PushFront<List, NewElement>;
 };
@@ -152,8 +145,7 @@ class ReverseT<List, false>
 : public PushBackT<Reverse<PopFront<List>>, Front<List>> {};
 
 template<typename List>
-class ReverseT<List, true>
-{
+class ReverseT<List, true> {
 public:
     using Type = List;
 };
@@ -179,8 +171,7 @@ class TransformT;
 // 使用包扩展的优化版本
 template<typename... Elements,
     template<typename T> class MetaFun>
-class TransformT<Typelist<Elements...>, MetaFun, false>
-{
+class TransformT<Typelist<Elements...>, MetaFun, false> {
 public:
     using Type = Typelist<typename MetaFun<Elements>::Type...>;
 };
@@ -196,8 +187,7 @@ public:
 
 template<typename List,
     template<typename T> class MetaFun>
-class TransformT<List, MetaFun, true>
-{
+class TransformT<List, MetaFun, true> {
 public:
     using Type = List;
 };
@@ -227,8 +217,7 @@ class AccumulateT<List, F, I, false>
 template<typename List,
     template<typename X, typename Y> class F,
     typename I>
-class AccumulateT<List, F, I, true>
-{
+class AccumulateT<List, F, I, true> {
 public:
     using Type = I;
 };
@@ -254,8 +243,7 @@ class InsertSortedT;
 
 template<typename List, typename Element,
     template<typename T, typename U> class Compare>
-class InsertSortedT<List, Element, Compare, false>
-{
+class InsertSortedT<List, Element, Compare, false>  {
     // compute the tail of the resulting list:
     using NewTail =
         typename IfThenElse<Compare<Element, Front<List>>::value,
@@ -303,8 +291,7 @@ class InsertionSortT<List, Compare, false>
 
 template<typename List,
     template<typename T, typename U> class Compare>
-class InsertionSortT<List, Compare, true>
-{
+class InsertionSortT<List, Compare, true> {
 public:
     using Type = List;
 };
@@ -312,8 +299,7 @@ public:
 
 
 template<typename T, T Value>
-struct CTValue
-{
+struct CTValue {
     static constexpr T value = Value;
 };
 
@@ -323,8 +309,7 @@ template<typename T, typename U>
 struct MultiplyT;
 
 template<typename T, T Value1, T Value2>
-struct MultiplyT<CTValue<T, Value1>, CTValue<T, Value2>>
-{
+struct MultiplyT<CTValue<T, Value1>, CTValue<T, Value2>> {
 public:
     using Type = CTValue<T, Value1 * Value2>;
 };
@@ -369,8 +354,7 @@ template<typename Types, typename Indices>
 class SelectT;
 
 template<typename Types, unsigned... Indices>
-class SelectT<Types, Valuelist<unsigned, Indices...>>
-{
+class SelectT<Types, Valuelist<unsigned, Indices...>> {
 public:
     using Type = Typelist<NthElement<Types, Indices>...>;
 };

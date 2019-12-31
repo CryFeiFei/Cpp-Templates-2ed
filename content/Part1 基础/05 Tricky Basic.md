@@ -300,7 +300,6 @@ s3 = s1; // 错误：类型不同
 ```cpp
 template<typename T>
 class Stack {
-    std::deque<T> v;
 public:
     void push(const T&);
     void pop();
@@ -309,6 +308,8 @@ public:
 
     template<typename U>
     Stack& operator=(const Stack<U>&);
+private:
+    std::deque<T> v;
 };
 
 template<typename T>
@@ -333,7 +334,7 @@ const T& Stack<T>::top() const
 
 template<typename T>
     template<typename U>
-Stack<T>& Stack<T>::operator= (const Stack<U>& rhs)
+Stack<T>& Stack<T>::operator=(const Stack<U>& rhs)
 {
     // 不能直接用v = rhs.v，因为内部的v类型也不一样
     Stack<U> tmp(rhs);
@@ -360,10 +361,11 @@ public:
     bool empty() const { return v.empty(); }
 
     template<typename U>
-    Stack& operator= (Stack<U> const&);
+    Stack& operator=(const Stack<U>&);
 
     // 声明友元以允许Stack<U>访问Stack<T>的私有成员
-    template<typename> friend class Stack; // U没被使用所以这里省略
+    template<typename> // U没被使用所以这里省略
+    friend class Stack;
 };
 ```
 * 有了这个成员模板，就能允许不同元素类型的Stack互相赋值
@@ -391,19 +393,20 @@ s2 = s1; // 错误：std::string不能转换为int
 ```cpp
 template<typename T, typename Cont = std::deque<T>>
 class Stack {
-private:
-    Cont v;
 public:
     void push(const T&);
     void pop();
     const T& top() const;
     bool empty() const { return v.empty(); }
-    
+
     template<typename T2, typename Cont2>
     Stack& operator= (const Stack<T2, Cont2>&);
 
     // operator=中要访问begin、end等私有成员，必须声明友元
-    template<typename, typename> friend class Stack;
+    template<typename, typename>
+    friend class Stack;
+private:
+    Cont v;
 };
 
 template <typename T, typename Cont>
@@ -428,11 +431,11 @@ const T& Stack<T, Cont>::top() const
 
 template<typename T, typename Cont>
     template<typename T2, typename Cont2>
-Stack<T, Cont>& Stack<T, Cont>::operator= (const Stack<T2, Cont2>& rhs)
+Stack<T, Cont>& Stack<T, Cont>::operator=(const Stack<T2, Cont2>& rhs)
 {
     v.clear();
-    v.emplace(v.begin(), rhs.v.begin(), rhs.v.end());
-    return *this;
+    v.emplace(v.begin(), rhs.v.begin(), rhs.v.end());
+    return *this;
 }
 ```
 * 这样实现更方便，但也可以按之前的写法实现
@@ -440,7 +443,7 @@ Stack<T, Cont>& Stack<T, Cont>::operator= (const Stack<T2, Cont2>& rhs)
 ```cpp
 template<typename T, typename Cont>
     template<typename T2, typename Cont2>
-Stack<T, Cont>& Stack<T, Cont>::operator= (const Stack<T2, Cont2>& rhs)
+Stack<T, Cont>& Stack<T, Cont>::operator=(const Stack<T2, Cont2>& rhs)
 {
     v.clear();
     Stack<T2, Cont2> tmp(rhs);
@@ -450,7 +453,7 @@ Stack<T, Cont>& Stack<T, Cont>::operator= (const Stack<T2, Cont2>& rhs)
         v.emplace_front(tmp.top());
         tmp.pop();
     }
-    return  *this;
+    return *this;
 }
 ```
 * 如果使用这个实现，可以利用成员函数在被调用时才会被实例化的特性，来禁用赋值运算符。使用一个[std::vector](https://en.cppreference.com/w/cpp/container/vector)作为内部容器，因为赋值运算符中使用了emplace_front，而[std::vector](https://en.cppreference.com/w/cpp/container/vector)没有此成员函数，只要不使用赋值运算符，程序就能正常运行
@@ -469,16 +472,18 @@ s = s2; // 错误：不能对s使用operator=
 
 ```cpp
 class A {
-    std::string s;
 public:
     A(const std::string& x) : s(x) {}
     template<typename T = std::string>
     T get() const { return s; }
+private:
+    std::string s;
 };
 
 // bool类型的全特化
 template<>
-inline bool A::get<bool>() const {
+inline bool A::get<bool>() const
+{
     return s == "true" || s == "1" || s == "on";
 }
 
@@ -498,7 +503,7 @@ int main()
 
 ```cpp
 template<unsigned long N>
-void f(std::bitset<N> const& b)
+void f(const std::bitset<N>& b)
 {
     std::cout << b.template to_string<char, std::char_traits<char>, std::allocator<char>>();
     // .template只需要用于依赖于模板参数的名称之后，比如这里的b依赖于模板参数N
@@ -518,7 +523,8 @@ class X {
 public:
     X(); // 此构造函数只能被编译器调用
     template<typename T1, typename T2>
-    auto operator() (T1 x, T2 y) const {
+    auto operator()(T1 x, T2 y) const
+    {
         return x + y;
     }
 };
@@ -587,7 +593,7 @@ int main()
 {
     std::cout << x<'c'> << '\n'; // N有char类型值'c'
     arr<10>[0] = 42; // 第一个元素设置为42（其他9个元素仍为0）
-    for(auto x : arr<10>) std::cout << x << ' ';
+    for (auto x : arr<10>) std::cout << x << ' ';
 }
 ```
 * 变量模板的一个用法是为类模板成员定义变量
@@ -651,12 +657,13 @@ Stack<int, std::vector> s;
 template<typename T,
     template<typename Elem> class Cont = std::deque>
 class Stack {
-    Cont<T> v;
 public:
     void push(const T&);
     void pop();
     const T& top() const;
     bool empty() const { return v.empty(); }
+private:
+    Cont<T> v;
 };
 ```
 * 因为Cont没有用到模板参数Elem，所以可以省略Elem
@@ -725,27 +732,27 @@ public:
         template<typename Elem2,
             typename = std::allocator<Elem2>
                 >class Cont2>
-    Stack<T,Cont>& operator= (const Stack<T2, Cont2>&);
+    Stack<T,Cont>& operator=(const Stack<T2, Cont2>&);
 
     template<typename, template<typename, typename>class>
     friend class Stack;
 };
 
 template<typename T, template<typename, typename> class Cont>
-void Stack<T,Cont>::push (const T& x)
+void Stack<T,Cont>::push(const T& x)
 {
     v.emplace_back(x);
 }
 
 template<typename T, template<typename, typename> class Cont>
-void Stack<T,Cont>::pop ()
+void Stack<T,Cont>::pop()
 {
     assert(!v.empty());
     v.pop_back();
 }
 
 template<typename T, template<typename, typename> class Cont>
-const T& Stack<T,Cont>::top () const
+const T& Stack<T,Cont>::top() const
 {
     assert(!v.empty());
     return v.back();
@@ -753,7 +760,7 @@ const T& Stack<T,Cont>::top () const
 
 template<typename T, template<typename, typename> class Cont>
     template<typename T2, template<typename, typename> class Cont2>
-Stack<T,Cont>& Stack<T,Cont>::operator= (const Stack<T2, Cont2>& rhs)
+Stack<T,Cont>& Stack<T,Cont>::operator=(const Stack<T2, Cont2>& rhs)
 {
     v.clear();
     v.emplace(v.begin(), rhs.v.begin(), rhs.v.end());
@@ -776,7 +783,7 @@ int main()
     s3.push(5.5);
     std::cout << s3.top(); // 5.5
     s3 = s2; // s3元素3.14、2、1
-    while(!s3.empty())
+    while (!s3.empty())
     {
         std::cout << s3.top() << ' '; // 3.14 2 1
         s3.pop();

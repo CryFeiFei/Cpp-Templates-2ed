@@ -9,11 +9,7 @@ class Tuple;
 
 // recursive case:
 template<typename Head, typename... Tail>
-class Tuple<Head, Tail...>
-{
-private:
-    Head head;
-    Tuple<Tail...> tail;
+class Tuple<Head, Tail...> {
 public:
     // constructors:
     Tuple() {}
@@ -24,6 +20,9 @@ public:
     const Head& getHead() const { return head; }
     Tuple<Tail...>& getTail() { return tail; }
     const Tuple<Tail...>& getTail() const { return tail; }
+private:
+    Head head;
+    Tuple<Tail...> tail;
 };
 
 // basis case:
@@ -39,7 +38,8 @@ class Tuple<> {
 template<unsigned N>
 struct TupleGet {
     template<typename Head, typename... Tail>
-    static auto apply(const Tuple<Head, Tail...>& t) {
+    static auto apply(const Tuple<Head, Tail...>& t)
+    {
         return TupleGet<N-1>::apply(t.getTail());
     }
 };
@@ -48,13 +48,15 @@ struct TupleGet {
 template<>
 struct TupleGet<0> {
     template<typename Head, typename... Tail>
-    static const Head& apply(const Tuple<Head, Tail...>& t) {
+    static const Head& apply(const Tuple<Head, Tail...>& t)
+    {
         return t.getHead();
     }
 };
 
 template<unsigned N, typename... Types>
-auto get(const Tuple<Types...>& t) {
+auto get(const Tuple<Types...>& t)
+{
     return TupleGet<N>::apply(t);
 }
 ```
@@ -131,7 +133,7 @@ bool operator==(const Tuple<>&, const Tuple<>&)
 // recursive case:
 template<typename Head1, typename... Tail1,
     typename Head2, typename... Tail2,
-    typename = std::enable_if_t<sizeof...(Tail1)==sizeof...(Tail2)>>
+    typename = std::enable_if_t<sizeof...(Tail1) == sizeof...(Tail2)>>
 bool operator==(const Tuple<Head1, Tail1...>& lhs, const Tuple<Head2, Tail2...>& rhs)
 {
     return lhs.getHead() == rhs.getHead() && lhs.getTail() == rhs.getTail();
@@ -142,8 +144,7 @@ bool operator==(const Tuple<Head1, Tail1...>& lhs, const Tuple<Head2, Tail2...>&
 ### 输出
 
 ```cpp
-void printTuple(std::ostream& strm, const Tuple<>&,
-    bool isFirst = true)
+void printTuple(std::ostream& strm, const Tuple<>&, bool isFirst = true)
 {
     strm << ( isFirst ? '(' : ')' );
 }
@@ -331,11 +332,11 @@ popBack(const Tuple<Types...>& tuple)
 
 ```cpp
 template<int N>
-struct CopyCounter
-{
+struct CopyCounter {
     inline static unsigned numCopies = 0;
     CopyCounter() {}
-    CopyCounter(const CopyCounter&) {
+    CopyCounter(const CopyCounter&)
+    {
         ++numCopies;
     }
 };
@@ -378,8 +379,7 @@ struct MakeIndexListT
 
 // basis case
 template<typename Result>
-struct MakeIndexListT<0, Result>
-{
+struct MakeIndexListT<0, Result> {
     using Type = Result;
 };
 
@@ -470,8 +470,7 @@ auto splat(const Tuple<Elements...>& t)
 #include <complex>
 
 template<typename T, typename U>
-class SmallerThanT
-{
+class SmallerThanT {
 public:
     static constexpr bool value = sizeof(T) < sizeof(U);
 };
@@ -540,7 +539,7 @@ void f(T t, Ts... ts)
     f(ts...);
 }
 
-auto print = [](auto... x){ f(x...); };
+auto print = [] (auto... x) { f(x...); };
 
 Tuple<std::string, const char*, int, char> t("Pi", "is roughly", 3, '!');
 apply(print, t); // Pi is roughly 3 ! 
@@ -555,15 +554,14 @@ apply(print, t); // Pi is roughly 3 !
 ```cpp
 // recursive case:
 template<typename Head, typename... Tail>
-class Tuple<Head, Tail...> : private Tuple<Tail...>
-{
-private:
-    Head head;
+class Tuple<Head, Tail...> : private Tuple<Tail...> {
 public:
     Head& getHead() { return head; }
     const Head& getHead() const { return head; }
     Tuple<Tail...>& getTail() { return *this; }
     const Tuple<Tail...>& getTail() const { return *this; }
+private:
+    Head head;
 };
 ```
 * 但这存在一个问题，之前head成员先于tail成员初始化，而这里tail在基类中，因此会先于head成员初始化。为此引入一个包裹head成员的类模板，将其作为基类并置于tail之前
@@ -573,9 +571,7 @@ template<typename... Types>
 class Tuple;
 
 template<typename T>
-class TupleElt
-{
-    T value;
+class TupleElt {
 public:
     TupleElt() = default;
 
@@ -584,24 +580,27 @@ public:
 
     T& get() { return value; }
     const T& get() const { return value; }
+private:
+    T value;
 };
 
 // recursive case:
 template<typename Head, typename... Tail>
 class Tuple<Head, Tail...>
-: private TupleElt<Head>, private Tuple<Tail...>
-{
+: private TupleElt<sizeof...(Tail), Head>, private Tuple<Tail...> {
 public:
-    Head& getHead() {
-        // potentially ambiguous
-        return static_cast<TupleElt<Head>*>(this)->get();
+    Head& getHead()
+    {
+        return static_cast<HeadElt*>(this)->get();
     }
-    const Head& getHead() const {
-        // potentially ambiguous
-        return static_cast<const TupleElt<Head>*>(this)->get();
+    const Head& getHead() const
+    {
+        return static_cast<const HeadElt*>(this)->get();
     }
     Tuple<Tail...>& getTail() { return *this; }
     const Tuple<Tail...>& getTail() const { return *this; }
+private:
+    using HeadElt = TupleElt<sizeof...(Tail), Head>;
 };
 
 // basis case:
@@ -616,7 +615,6 @@ class Tuple<> {
 ```cpp
 template<unsigned Height, typename T>
 class TupleElt {
-    T value;
 public:
     TupleElt() = default;
 
@@ -625,6 +623,8 @@ public:
 
     T& get() { return value; }
     const T& get() const { return value; }
+private:
+    T value;
 };
 
 template<typename... Types>
@@ -633,18 +633,20 @@ class Tuple;
 // recursive case:
 template<typename Head, typename... Tail>
 class Tuple<Head, Tail...>
-: private TupleElt<sizeof...(Tail), Head>, private Tuple<Tail...>
-{
-    using HeadElt = TupleElt<sizeof...(Tail), Head>;
+: private TupleElt<sizeof...(Tail), Head>, private Tuple<Tail...> {
 public:
-    Head& getHead() {
+    Head& getHead()
+    {
         return static_cast<HeadElt*>(this)->get();
     }
-    const Head& getHead() const {
+    const Head& getHead() const
+    {
         return static_cast<const HeadElt*>(this)->get();
     }
     Tuple<Tail...>& getTail() { return *this; }
     const Tuple<Tail...>& getTail() const { return *this; }
+private:
+    using HeadElt = TupleElt<sizeof...(Tail), Head>;
 };
 
 // basis case:
@@ -686,10 +688,7 @@ template<unsigned Height, typename T,
 class TupleElt;
 
 template<unsigned Height, typename T>
-class TupleElt<Height, T, false>
-{
-    T value;
-
+class TupleElt<Height, T, false> {
 public:
     TupleElt() = default;
 
@@ -698,11 +697,12 @@ public:
 
     T& get() { return value; }
     const T& get() const { return value; }
+private:
+    T value;
 };
 
 template<unsigned Height, typename T>
-class TupleElt<Height, T, true> : private T
-{
+class TupleElt<Height, T, true> : private T {
 public:
     TupleElt() = default;
 
@@ -756,7 +756,8 @@ friend auto get(Tuple<Elements...>& t)
 
 ```cpp
 template<typename T, T Index>
-auto& operator[](CTValue<T, Index>) {
+auto& operator[](CTValue<T, Index>)
+{
     return get<Index>(*this);
 }
 

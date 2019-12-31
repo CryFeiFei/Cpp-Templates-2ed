@@ -21,7 +21,8 @@ public:
 template<typename T, bool EqComparable = IsEqualityComparable<T>::value>
 struct TryEquals
 {
-    static bool equals(const T& x1, const T& x2) {
+    static bool equals(const T& x1, const T& x2)
+    {
         return x1 == x2;
     }
 };
@@ -31,7 +32,8 @@ class NotEqualityComparable : public std::exception {};
 template<typename T>
 struct TryEquals<T, false>
 {
-    static bool equals(const T& x1, const T& x2) {
+    static bool equals(const T& x1, const T& x2)
+    {
         throw NotEqualityComparable();
     }
 };
@@ -51,16 +53,19 @@ public:
 
 template<typename F, typename R, typename... Args>
 class X : public B<R, Args...> {
+private:
     F f;
 public:
     template<typename T>
     X(T&& f) : f(std::forward<T>(f)) {}
 
-    virtual X* clone() const override {
+    virtual X* clone() const override
+    {
         return new X(f);
     }
 
-    virtual R invoke(Args... args) const override {
+    virtual R invoke(Args... args) const override
+    {
         return f(std::forward<Args>(args)...);
     }
 
@@ -80,8 +85,7 @@ template<typename Signature>
 class A;
 
 template<typename R, typename... Args>
-class A<R(Args...)>
-{
+class A<R(Args...)> {
 private:
     B<R, Args...>* bridge; // 该指针负责管理函数对象
 public:
@@ -89,14 +93,16 @@ public:
 
     A(const A& other) : bridge(nullptr)
     {
-        if (other.bridge) {
+        if (other.bridge)
+        {
             bridge = other.bridge->clone();
         }
     }
 
     A(A& other) : A(static_cast<const A&>(other)) {}
 
-    A(A&& other) noexcept : bridge(other.bridge) {
+    A(A&& other) noexcept : bridge(other.bridge)
+    {
         other.bridge = nullptr;
     }
 
@@ -108,20 +114,23 @@ public:
         bridge = new Bridge(std::forward<F>(f)); // 派生类到基类的转换，F丢失，类型擦除
     }
 
-    A& operator=(const A& other) {
+    A& operator=(const A& other)
+    {
         A tmp(other);
         swap(*this, tmp);
         return *this;
     }
 
-    A& operator=(A&& other) noexcept {
+    A& operator=(A&& other) noexcept
+    {
         delete bridge;
         bridge = other.bridge;
         other.bridge = nullptr;
         return *this;
     }
 
-    template<typename F> A& operator=(F&& f) {
+    template<typename F> A& operator=(F&& f)
+    {
         A tmp(std::forward<F>(f));
         swap(*this, tmp);
         return *this;
@@ -129,11 +138,13 @@ public:
 
     ~A() { delete bridge; }
 
-    friend void swap(A& fp1, A& fp2) noexcept {
+    friend void swap(A& fp1, A& fp2) noexcept
+    {
         std::swap(fp1.bridge, fp2.bridge);
     }
 
-    explicit operator bool() const {
+    explicit operator bool() const
+    {
         return bridge == nullptr;
     }
 
@@ -142,14 +153,17 @@ public:
         return bridge->invoke(std::forward<Args>(args)...);
     }
 
-    friend bool operator==(const A& f1, const A& f2) {
-        if (!f1 || !f2) {
+    friend bool operator==(const A& f1, const A& f2)
+    {
+        if (!f1 || !f2)
+        {
             return !f1 && !f2;
         }
         return f1.bridge->equals(f2.bridge); // equals要求operator==
     }
 
-    friend bool operator!=(const A& f1, const A& f2) {
+    friend bool operator!=(const A& f1, const A& f2)
+    {
         return !(f1 == f2);
     }
 };
