@@ -201,7 +201,7 @@ std::cout << less("ab", "abc"); // true：T = const char, N = 3，M = 4
 
 ```cpp
 template<int N, int M>
-bool less (const char(&a)[N], const char(&b)[M])
+bool less(const char(&a)[N], const char(&b)[M])
 {
     for (int i = 0; i < N && i < M; ++i)
     {
@@ -409,20 +409,20 @@ private:
     Cont v;
 };
 
-template <typename T, typename Cont>
+template<typename T, typename Cont>
 void Stack<T, Cont>::push(const T& x)
 {
     v.emplace_back(x);
 }
 
-template <typename T, typename Cont>
+template<typename T, typename Cont>
 void Stack<T, Cont>::pop()
 {
     assert(!v.empty());
     v.pop_back();
 }
 
-template <typename T, typename Cont>
+template<typename T, typename Cont>
 const T& Stack<T, Cont>::top() const
 {
     assert(!v.empty());

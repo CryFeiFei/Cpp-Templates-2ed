@@ -174,7 +174,7 @@ public:
     }
 };
 
-template <typename T,
+template<typename T,
     typename Policy = MultPolicy,
     typename Traits = AccumulationTraits<T>>
 auto accum(const T* beg, const T* end)
@@ -200,7 +200,7 @@ int main()
 * 之前把policy实现为含成员模板的普通类，下面用类模板实现policy类，并将其用作模板的模板参数来修改Accum接口
 
 ```cpp
-template <typename T1, typename T2>
+template<typename T1, typename T2>
 class MultPolicy {
 public:
     static void accumulate(T1& total, const T2& value)
